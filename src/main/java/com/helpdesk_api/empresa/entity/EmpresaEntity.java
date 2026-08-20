@@ -1,5 +1,7 @@
-package com.helpdesk_api.entity;
+package com.helpdesk_api.empresa.entity;
 
+import com.helpdesk_api.entity.Chamado;
+import com.helpdesk_api.entity.Usuario;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,7 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @AllArgsConstructor
 @ToString(exclude = {"usuarios", "chamados"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Empresa {
+public class EmpresaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

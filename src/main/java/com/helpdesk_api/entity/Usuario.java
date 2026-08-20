@@ -1,5 +1,6 @@
 package com.helpdesk_api.entity;
 
+import com.helpdesk_api.empresa.entity.EmpresaEntity;
 import com.helpdesk_api.enums.Cargo;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -45,5 +46,5 @@ public class Usuario {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empresa_id", nullable = true)
-    private Empresa empresa;
+    private EmpresaEntity empresa;
 }
