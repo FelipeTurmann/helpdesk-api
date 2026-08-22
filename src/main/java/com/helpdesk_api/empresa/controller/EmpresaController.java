@@ -1,11 +1,13 @@
 package com.helpdesk_api.empresa.controller;
 
+import com.helpdesk_api.empresa.dto.EmpresaFiltroConsultaDto;
 import com.helpdesk_api.empresa.dto.EmpresaRequestDto;
 import com.helpdesk_api.empresa.dto.EmpresaResponseDto;
 import com.helpdesk_api.empresa.service.EmpresaService;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,5 +29,10 @@ public class EmpresaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping
+    public ResponseEntity<List<EmpresaResponseDto>> listarEmpresas(@ParameterObject EmpresaFiltroConsultaDto requestDto) {
+        List<EmpresaResponseDto> response = empresaService.listarEmpresas(requestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 
 }
