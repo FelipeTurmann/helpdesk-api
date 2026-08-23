@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,5 +54,15 @@ public class EmpresaService {
         }
 
         return listaEmpresasFiltradas;
+    }
+
+    public EmpresaResponseDto listarEmpresaPorId(Long idEmpresa) {
+
+        Optional<EmpresaEntity> empresaPorId = empresaRepository.findById(idEmpresa);
+
+        return empresaMapper.toResponseDTO(
+                empresaPorId.orElseThrow(
+                        () -> new BusinessException(
+                                "Não existe nenhuma empresa cadastrada para o id: " + idEmpresa)));
     }
 }
