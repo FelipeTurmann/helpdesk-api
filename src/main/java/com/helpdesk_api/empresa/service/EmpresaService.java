@@ -8,6 +8,7 @@ import com.helpdesk_api.empresa.mapper.EmpresaMapper;
 import com.helpdesk_api.empresa.repository.EmpresaRepository;
 import com.helpdesk_api.empresa.repository.EmpresaSpecification;
 import com.helpdesk_api.exception.BusinessException;
+import com.helpdesk_api.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -56,13 +57,22 @@ public class EmpresaService {
         return listaEmpresasFiltradas;
     }
 
+    @Transactional(readOnly = true)
     public EmpresaResponseDto listarEmpresaPorId(Long idEmpresa) {
 
-        Optional<EmpresaEntity> empresaPorId = empresaRepository.findById(idEmpresa);
+        EmpresaEntity empresa = buscarEntidadePorId(idEmpresa);
 
-        return empresaMapper.toResponseDTO(
-                empresaPorId.orElseThrow(
-                        () -> new BusinessException(
-                                "Não existe nenhuma empresa cadastrada para o id: " + idEmpresa)));
+        return empresaMapper.toResponseDTO(empresa);
+    }
+
+    @Transactional
+    public void excluir(Long idEmpresa) {
+        EmpresaEntity empresa = buscarEntidadePorId(idEmpresa);
+        empresaRepository.delete(empresa);
+    }
+
+    private EmpresaEntity buscarEntidadePorId(Long id) {
+        return empresaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada: " + id));
     }
 }
