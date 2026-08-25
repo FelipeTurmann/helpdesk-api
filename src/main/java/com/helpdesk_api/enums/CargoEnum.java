@@ -1,6 +1,6 @@
 package com.helpdesk_api.enums;
 
-public enum Cargo {
+public enum CargoEnum {
     ADMIN,
     CLIENT
 }

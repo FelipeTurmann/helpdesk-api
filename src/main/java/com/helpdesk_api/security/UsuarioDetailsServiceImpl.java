@@ -1,6 +1,6 @@
 package com.helpdesk_api.security;
 
-import com.helpdesk_api.entity.Usuario;
+import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import com.helpdesk_api.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -17,7 +17,7 @@ public class UsuarioDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+        UsuarioEntity usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
 
         return new UsuarioDetailsImpl(usuario);

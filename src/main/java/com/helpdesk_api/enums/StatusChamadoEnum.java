@@ -1,6 +1,6 @@
 package com.helpdesk_api.enums;
 
-public enum StatusChamado {
+public enum StatusChamadoEnum {
     BAIXA,
     MEDIA,
     ALTA,

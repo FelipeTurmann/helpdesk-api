@@ -1,7 +1,7 @@
 package com.helpdesk_api.empresa.entity;
 
 import com.helpdesk_api.entity.Chamado;
-import com.helpdesk_api.entity.Usuario;
+import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,7 +46,7 @@ public class EmpresaEntity {
 
     @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<Usuario> usuarios = new java.util.ArrayList<>();
+    private List<UsuarioEntity> usuarios = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY)
     @Builder.Default

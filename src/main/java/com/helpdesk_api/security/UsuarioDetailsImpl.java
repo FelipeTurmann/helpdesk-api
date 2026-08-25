@@ -1,6 +1,6 @@
 package com.helpdesk_api.security;
 
-import com.helpdesk_api.entity.Usuario;
+import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,13 +10,13 @@ import java.util.List;
 
 public class UsuarioDetailsImpl implements UserDetails {
 
-    private final Usuario usuario;
+    private final UsuarioEntity usuario;
 
-    public UsuarioDetailsImpl(Usuario usuario) {
+    public UsuarioDetailsImpl(UsuarioEntity usuario) {
         this.usuario = usuario;
     }
 
-    public Usuario getUsuario() {
+    public UsuarioEntity getUsuario() {
         return usuario;
     }
 

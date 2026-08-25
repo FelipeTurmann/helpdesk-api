@@ -1,5 +1,6 @@
 package com.helpdesk_api.entity;
 
+import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -30,7 +31,7 @@ public class Comentario {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    private UsuarioEntity usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chamado_id", nullable = false)

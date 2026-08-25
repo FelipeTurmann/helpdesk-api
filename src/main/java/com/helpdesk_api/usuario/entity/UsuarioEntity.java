@@ -1,7 +1,7 @@
-package com.helpdesk_api.entity;
+package com.helpdesk_api.usuario.entity;
 
 import com.helpdesk_api.empresa.entity.EmpresaEntity;
-import com.helpdesk_api.enums.Cargo;
+import com.helpdesk_api.enums.CargoEnum;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -16,7 +16,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @AllArgsConstructor
 @ToString(exclude = {"empresa"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Usuario {
+public class UsuarioEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Cargo cargo;
+    private CargoEnum cargo;
 
     @Builder.Default
     @Column(nullable = false)
@@ -45,6 +45,6 @@ public class Usuario {
     private LocalDateTime dataCadastro;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empresa_id", nullable = true)
+    @JoinColumn(name = "empresa_id")
     private EmpresaEntity empresa;
 }

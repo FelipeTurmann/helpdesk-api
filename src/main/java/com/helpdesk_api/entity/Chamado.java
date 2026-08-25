@@ -1,8 +1,9 @@
 package com.helpdesk_api.entity;
 
 import com.helpdesk_api.empresa.entity.EmpresaEntity;
-import com.helpdesk_api.enums.Prioridade;
-import com.helpdesk_api.enums.StatusChamado;
+import com.helpdesk_api.enums.PrioridadeEnum;
+import com.helpdesk_api.enums.StatusChamadoEnum;
+import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,11 +35,11 @@ public class Chamado {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusChamado status;
+    private StatusChamadoEnum status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Prioridade prioridade;
+    private PrioridadeEnum prioridade;
 
     @Column(nullable = false)
     private String categoria;
@@ -60,7 +61,7 @@ public class Chamado {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuarioAbertura;
+    private UsuarioEntity usuarioAbertura;
 
     @OneToMany(mappedBy = "chamado", fetch = FetchType.LAZY)
     @Builder.Default

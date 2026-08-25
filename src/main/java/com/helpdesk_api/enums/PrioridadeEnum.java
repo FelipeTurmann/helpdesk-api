@@ -1,6 +1,6 @@
 package com.helpdesk_api.enums;
 
-public enum Prioridade {
+public enum PrioridadeEnum {
     ABERTO,
     EM_ATENDIEMNTO,
     AGURDANDO_CLIENTE,
