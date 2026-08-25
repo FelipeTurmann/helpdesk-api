@@ -41,6 +41,14 @@ public class EmpresaController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<EmpresaResponseDto> atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody EmpresaRequestDto request
+    ) {
+        return ResponseEntity.ok(empresaService.atualizar(id, request));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         empresaService.excluir(id);

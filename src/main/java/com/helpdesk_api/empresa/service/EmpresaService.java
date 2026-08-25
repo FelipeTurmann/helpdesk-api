@@ -66,6 +66,19 @@ public class EmpresaService {
     }
 
     @Transactional
+    public EmpresaResponseDto atualizar(Long id, EmpresaRequestDto request) {
+        EmpresaEntity empresa = buscarEntidadePorId(id);
+
+        if (!empresa.getCnpj().equals(request.cnpj()) && empresaRepository.existsByCnpj(request.cnpj())) {
+            throw new BusinessException("Já existe uma empresa cadastrada com este CNPJ");
+        }
+
+        empresaMapper.updateEntityFromDto(request, empresa);
+        EmpresaEntity atualizada = empresaRepository.save(empresa);
+        return empresaMapper.toResponseDTO(atualizada);
+    }
+
+    @Transactional
     public void excluir(Long idEmpresa) {
         EmpresaEntity empresa = buscarEntidadePorId(idEmpresa);
         empresaRepository.delete(empresa);
