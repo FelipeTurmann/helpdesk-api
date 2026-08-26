@@ -1,7 +1,7 @@
 package com.helpdesk_api.security;
 
 import com.helpdesk_api.usuario.entity.UsuarioEntity;
-import com.helpdesk_api.repository.UsuarioRepository;
+import com.helpdesk_api.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;

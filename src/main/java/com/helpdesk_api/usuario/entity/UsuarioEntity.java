@@ -18,6 +18,8 @@ import org.hibernate.annotations.CreationTimestamp;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UsuarioEntity {
 
+    //TODO mapear o name das colunas
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
