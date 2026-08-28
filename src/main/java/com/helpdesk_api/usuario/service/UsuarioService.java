@@ -50,6 +50,17 @@ public class UsuarioService {
         }
     }
 
+    @Transactional
+    public void excluirUsuario(Long id) {
+        UsuarioEntity usuario = buscarEntidadePorId(id);
+        usuarioRepository.delete(usuario);
+    }
+
+    private UsuarioEntity buscarEntidadePorId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + id));
+    }
+
     private EmpresaEntity buscarEmpresa(Long empresaId) {
         if (empresaId == null) {
             return null;
