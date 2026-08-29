@@ -24,6 +24,11 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioResponseDto> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.buscarPorId(id));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         usuarioService.excluirUsuario(id);

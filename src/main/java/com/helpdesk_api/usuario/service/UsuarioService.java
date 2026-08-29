@@ -42,18 +42,23 @@ public class UsuarioService {
         return usuarioMapper.toResponseDto(salvo);
     }
 
-    private void validarEmpresaObrigatoria(CargoEnum cargo, Long empresaId) {
-        if (cargo == CargoEnum.CLIENTE && empresaId == null) {
-            throw new BusinessException(
-                    "Usuário com cargo CLIENTE deve estar vinculado a uma empresa."
-            );
-        }
+    @Transactional(readOnly = true)
+    public UsuarioResponseDto buscarPorId(Long id) {
+        return usuarioMapper.toResponseDto(buscarEntidadePorId(id));
     }
 
     @Transactional
     public void excluirUsuario(Long id) {
         UsuarioEntity usuario = buscarEntidadePorId(id);
         usuarioRepository.delete(usuario);
+    }
+
+    private void validarEmpresaObrigatoria(CargoEnum cargo, Long empresaId) {
+        if (cargo == CargoEnum.CLIENTE && empresaId == null) {
+            throw new BusinessException(
+                    "Usuário com cargo CLIENTE deve estar vinculado a uma empresa."
+            );
+        }
     }
 
     private UsuarioEntity buscarEntidadePorId(Long id) {
