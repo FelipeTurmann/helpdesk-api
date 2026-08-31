@@ -5,15 +5,20 @@ import com.helpdesk_api.empresa.repository.EmpresaRepository;
 import com.helpdesk_api.enums.CargoEnum;
 import com.helpdesk_api.exception.BusinessException;
 import com.helpdesk_api.exception.ResourceNotFoundException;
+import com.helpdesk_api.usuario.dto.UsuarioFiltroConsultaDto;
 import com.helpdesk_api.usuario.dto.UsuarioRequestDto;
 import com.helpdesk_api.usuario.dto.UsuarioResponseDto;
 import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import com.helpdesk_api.usuario.mapper.UsuarioMapper;
 import com.helpdesk_api.usuario.repository.UsuarioRepository;
+import com.helpdesk_api.usuario.repository.UsuarioSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +45,21 @@ public class UsuarioService {
 
         UsuarioEntity salvo = usuarioRepository.save(usuario);
         return usuarioMapper.toResponseDto(salvo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UsuarioResponseDto> listarUsuarios(UsuarioFiltroConsultaDto filtro) {
+        Specification<UsuarioEntity> specification = Specification.allOf(
+                UsuarioSpecification.comNome(filtro.nome()),
+                UsuarioSpecification.comEmail(filtro.email()),
+                UsuarioSpecification.comCargo(filtro.cargo()),
+                UsuarioSpecification.comEmpresaId(filtro.empresaId()),
+                UsuarioSpecification.comAtivo(filtro.ativo())
+        );
+
+        return usuarioRepository.findAll(specification).stream()
+                .map(usuarioMapper::toResponseDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
