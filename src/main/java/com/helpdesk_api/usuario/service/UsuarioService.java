@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -63,8 +64,31 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public UsuarioResponseDto buscarPorId(Long id) {
+    public UsuarioResponseDto buscarUsuarioPorId(Long id) {
         return usuarioMapper.toResponseDto(buscarEntidadePorId(id));
+    }
+
+    @Transactional
+    public UsuarioResponseDto atualizarUsuario(Long id, UsuarioRequestDto request) {
+        UsuarioEntity usuario = buscarEntidadePorId(id);
+
+        if (!usuario.getEmail().equals(request.email()) && usuarioRepository.existsByEmail(request.email())) {
+            throw new BusinessException("Já existe um usuário cadastrado com este email.");
+        }
+
+        // validarEmpresaObrigatoria(request.cargo(), request.empresaId()); desabilitado temporariamente
+        EmpresaEntity empresa = buscarEmpresa(request.empresaId());
+
+        usuarioMapper.updateEntityFromDto(request, usuario);
+        usuario.setEmpresa(empresa);
+
+        // so re-hasheia a senha se uma nova senha foi realmente enviada
+        if (StringUtils.hasText(request.senha())) {
+            usuario.setSenha(passwordEncoder.encode(request.senha()));
+        }
+
+        UsuarioEntity atualizado = usuarioRepository.save(usuario);
+        return usuarioMapper.toResponseDto(atualizado);
     }
 
     @Transactional

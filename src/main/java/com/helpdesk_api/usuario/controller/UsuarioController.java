@@ -34,8 +34,16 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDto> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.buscarPorId(id));
+    public ResponseEntity<UsuarioResponseDto> buscarUsuarioPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorId(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioResponseDto> atualizarUsuario(
+            @PathVariable Long id,
+            @Valid @RequestBody UsuarioRequestDto request
+    ) {
+        return ResponseEntity.ok(usuarioService.atualizarUsuario(id, request));
     }
 
     @DeleteMapping("/{id}")
