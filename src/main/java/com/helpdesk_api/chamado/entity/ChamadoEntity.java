@@ -1,4 +1,4 @@
-package com.helpdesk_api.entity;
+package com.helpdesk_api.chamado.entity;
 
 import com.helpdesk_api.empresa.entity.EmpresaEntity;
 import com.helpdesk_api.enums.PrioridadeEnum;
@@ -6,7 +6,7 @@ import com.helpdesk_api.enums.StatusChamadoEnum;
 import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,9 +18,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"empresa", "usuarioAbertura", "comentarios"})
+@ToString(exclude = {"empresa", "usuarioAbertura"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Chamado {
+public class ChamadoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,8 +62,4 @@ public class Chamado {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private UsuarioEntity usuarioAbertura;
-
-    @OneToMany(mappedBy = "chamado", fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<Comentario> comentarios = new java.util.ArrayList<>();
 }
