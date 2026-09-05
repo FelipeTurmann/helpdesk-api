@@ -1,8 +1,8 @@
 package com.helpdesk_api.chamado.entity;
 
 import com.helpdesk_api.empresa.entity.EmpresaEntity;
-import com.helpdesk_api.enums.PrioridadeEnum;
 import com.helpdesk_api.enums.StatusChamadoEnum;
+import com.helpdesk_api.enums.PrioridadeEnum;
 import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

@@ -1,8 +1,9 @@
 package com.helpdesk_api.enums;
 
 public enum StatusChamadoEnum {
-    BAIXA,
-    MEDIA,
-    ALTA,
-    CRITICA
+    ABERTO,
+    EM_ATENDIEMNTO,
+    AGURDANDO_CLIENTE,
+    RESOLVIDO,
+    FECHADO
 }
