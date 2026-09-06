@@ -7,6 +7,7 @@ import com.helpdesk_api.chamado.mapper.ChamadoMapper;
 import com.helpdesk_api.chamado.repository.ChamadoRepository;
 import com.helpdesk_api.enums.CargoEnum;
 import com.helpdesk_api.enums.StatusChamadoEnum;
+import com.helpdesk_api.exception.BusinessException;
 import com.helpdesk_api.exception.ResourceNotFoundException;
 import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import com.helpdesk_api.util.UsuarioUtil;
@@ -40,6 +41,20 @@ public class ChamadoService {
         ChamadoEntity chamado = buscarEntidadePorId(id);
         validarAcessoAoChamado(chamado);
         return chamadoMapper.toResponseDto(chamado);
+    }
+
+    @Transactional
+    public ChamadoResponseDto atualizarChamado(Long id, ChamadoRequestDto request) {
+        ChamadoEntity chamado = buscarEntidadePorId(id);
+        validarAcessoAoChamado(chamado);
+
+        if (chamado.getStatus() != StatusChamadoEnum.ABERTO) {
+            throw new BusinessException("Chamado só pode ser editado enquanto estiver ABERTO.");
+        }
+
+        chamadoMapper.updateEntityFromDto(request, chamado);
+        ChamadoEntity atualizado = chamadoRepository.save(chamado);
+        return chamadoMapper.toResponseDto(atualizado);
     }
 
     // CLIENTE só acessa chamados da própria empresa. ADMIN acessa qualquer um.

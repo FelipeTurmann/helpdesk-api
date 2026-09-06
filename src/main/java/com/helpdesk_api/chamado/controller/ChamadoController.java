@@ -29,4 +29,13 @@ public class ChamadoController {
     public ResponseEntity<ChamadoResponseDto> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(chamadoService.buscarChamadoPorId(id));
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<ChamadoResponseDto> atualizarChamado(
+            @PathVariable Long id,
+            @Valid @RequestBody ChamadoRequestDto request
+    ) {
+        return ResponseEntity.ok(chamadoService.atualizarChamado(id, request));
+    }
 }

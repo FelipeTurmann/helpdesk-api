@@ -20,4 +20,10 @@ public interface ChamadoMapper {
     @Mapping(target = "usuarioAberturaId", source = "usuarioAbertura.id")
     @Mapping(target = "usuarioAberturaNome", source = "usuarioAbertura.nome")
     ChamadoResponseDto toResponseDto(ChamadoEntity entity);
+
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "empresa", ignore = true)
+    @Mapping(target = "usuarioAbertura", ignore = true)
+    void updateEntityFromDto(ChamadoRequestDto dto, @MappingTarget ChamadoEntity entity);
+
 }
