@@ -38,4 +38,11 @@ public class ChamadoController {
     ) {
         return ResponseEntity.ok(chamadoService.atualizarChamado(id, request));
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        chamadoService.excluirChamado(id);
+        return ResponseEntity.noContent().build();
+    }
 }

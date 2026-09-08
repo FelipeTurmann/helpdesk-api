@@ -99,6 +99,12 @@ public class ChamadoService {
         return chamadoMapper.toResponseDto(atualizado);
     }
 
+    @Transactional
+    public void excluirChamado(Long id) {
+        ChamadoEntity chamado = buscarEntidadePorId(id);
+        chamadoRepository.delete(chamado);
+    }
+
     // CLIENTE só acessa chamados da própria empresa. ADMIN acessa qualquer um.
     private void validarAcessoAoChamado(ChamadoEntity chamado) {
         UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
