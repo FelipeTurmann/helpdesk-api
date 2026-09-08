@@ -2,6 +2,7 @@ package com.helpdesk_api.chamado.controller;
 
 import com.helpdesk_api.chamado.dto.ChamadoRequestDto;
 import com.helpdesk_api.chamado.dto.ChamadoResponseDto;
+import com.helpdesk_api.chamado.dto.ChamadoStatusUpdateDto;
 import com.helpdesk_api.chamado.service.ChamadoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,15 @@ public class ChamadoController {
             @Valid @RequestBody ChamadoRequestDto request
     ) {
         return ResponseEntity.ok(chamadoService.atualizarChamado(id, request));
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ChamadoResponseDto> alterarStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody ChamadoStatusUpdateDto dto
+    ) {
+        return ResponseEntity.ok(chamadoService.alterarStatus(id, dto));
     }
 
     @DeleteMapping("/{id}")

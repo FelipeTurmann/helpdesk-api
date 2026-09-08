@@ -2,6 +2,7 @@ package com.helpdesk_api.chamado.service;
 
 import com.helpdesk_api.chamado.dto.ChamadoRequestDto;
 import com.helpdesk_api.chamado.dto.ChamadoResponseDto;
+import com.helpdesk_api.chamado.dto.ChamadoStatusUpdateDto;
 import com.helpdesk_api.chamado.entity.ChamadoEntity;
 import com.helpdesk_api.chamado.mapper.ChamadoMapper;
 import com.helpdesk_api.chamado.repository.ChamadoRepository;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -96,6 +99,19 @@ public class ChamadoService {
                 atualizado.getId(),
                 atualizado.getStatus());
 
+        return chamadoMapper.toResponseDto(atualizado);
+    }
+
+    @Transactional
+    public ChamadoResponseDto alterarStatus(Long id, ChamadoStatusUpdateDto dto) {
+        ChamadoEntity chamado = buscarEntidadePorId(id);
+
+        chamado.setStatus(dto.status());
+        if (dto.status() == StatusChamadoEnum.FECHADO) {
+            chamado.setDataFechamento(LocalDateTime.now());
+        }
+
+        ChamadoEntity atualizado = chamadoRepository.save(chamado);
         return chamadoMapper.toResponseDto(atualizado);
     }
 
