@@ -1,15 +1,19 @@
 package com.helpdesk_api.chamado.controller;
 
+import com.helpdesk_api.chamado.dto.ChamadoFiltroConsultaDto;
 import com.helpdesk_api.chamado.dto.ChamadoRequestDto;
 import com.helpdesk_api.chamado.dto.ChamadoResponseDto;
 import com.helpdesk_api.chamado.dto.ChamadoStatusUpdateDto;
 import com.helpdesk_api.chamado.service.ChamadoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/chamados")
@@ -23,6 +27,12 @@ public class ChamadoController {
     public ResponseEntity<ChamadoResponseDto> abrirChamado(@Valid @RequestBody ChamadoRequestDto request) {
         ChamadoResponseDto response = chamadoService.abrirChamado(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
+    public ResponseEntity<List<ChamadoResponseDto>> listarChamados(@ParameterObject ChamadoFiltroConsultaDto filtro) {
+        return ResponseEntity.ok(chamadoService.listarChamados(filtro));
     }
 
     @GetMapping("/{id}")

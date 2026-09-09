@@ -1,11 +1,13 @@
 package com.helpdesk_api.chamado.service;
 
+import com.helpdesk_api.chamado.dto.ChamadoFiltroConsultaDto;
 import com.helpdesk_api.chamado.dto.ChamadoRequestDto;
 import com.helpdesk_api.chamado.dto.ChamadoResponseDto;
 import com.helpdesk_api.chamado.dto.ChamadoStatusUpdateDto;
 import com.helpdesk_api.chamado.entity.ChamadoEntity;
 import com.helpdesk_api.chamado.mapper.ChamadoMapper;
 import com.helpdesk_api.chamado.repository.ChamadoRepository;
+import com.helpdesk_api.chamado.repository.ChamadoSpecification;
 import com.helpdesk_api.enums.CargoEnum;
 import com.helpdesk_api.enums.StatusChamadoEnum;
 import com.helpdesk_api.exception.BusinessException;
@@ -14,10 +16,12 @@ import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import com.helpdesk_api.util.UsuarioUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +56,27 @@ public class ChamadoService {
                 usuario.getEmpresa() != null ? usuario.getEmpresa().getId() : null);
 
         return chamadoMapper.toResponseDto(salvo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChamadoResponseDto> listarChamados(ChamadoFiltroConsultaDto filtro) {
+        UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
+
+        // CLIENTE só pode ver chamados da própria empresa, independente do que vier no filtro.
+        Long empresaIdEfetivo = usuario.getCargo() == CargoEnum.CLIENTE
+                ? usuario.getEmpresa().getId()
+                : filtro.empresaId();
+
+        Specification<ChamadoEntity> specification = Specification.allOf(
+                ChamadoSpecification.comStatus(filtro.status()),
+                ChamadoSpecification.comPrioridade(filtro.prioridade()),
+                ChamadoSpecification.comCategoria(filtro.categoria()),
+                ChamadoSpecification.comEmpresaId(empresaIdEfetivo)
+        );
+
+        return chamadoRepository.findAll(specification).stream()
+                .map(chamadoMapper::toResponseDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
