@@ -60,12 +60,24 @@ public class ChamadoService {
 
     @Transactional(readOnly = true)
     public List<ChamadoResponseDto> listarChamados(ChamadoFiltroConsultaDto filtro) {
+        log.info("Iniciando listagem de chamados.");
+
         UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
 
         // CLIENTE só pode ver chamados da própria empresa, independente do que vier no filtro.
         Long empresaIdEfetivo = usuario.getCargo() == CargoEnum.CLIENTE
                 ? usuario.getEmpresa().getId()
                 : filtro.empresaId();
+
+        log.debug("Filtros da listagem de chamados. usuarioId={}, cargo={}, status={}, prioridade={}, "
+                        + "categoria={}, empresaIdFiltro={}, empresaIdEfetivo={}",
+                usuario.getId(),
+                usuario.getCargo(),
+                filtro.status(),
+                filtro.prioridade(),
+                filtro.categoria(),
+                filtro.empresaId(),
+                empresaIdEfetivo);
 
         Specification<ChamadoEntity> specification = Specification.allOf(
                 ChamadoSpecification.comStatus(filtro.status()),
@@ -74,9 +86,15 @@ public class ChamadoService {
                 ChamadoSpecification.comEmpresaId(empresaIdEfetivo)
         );
 
-        return chamadoRepository.findAll(specification).stream()
+        List<ChamadoResponseDto> chamados = chamadoRepository.findAll(specification).stream()
                 .map(chamadoMapper::toResponseDto)
                 .toList();
+
+        log.info("Listagem de chamados concluída com sucesso. usuarioId={}, quantidade={}",
+                usuario.getId(),
+                chamados.size());
+
+        return chamados;
     }
 
     @Transactional(readOnly = true)
@@ -129,21 +147,54 @@ public class ChamadoService {
 
     @Transactional
     public ChamadoResponseDto alterarStatus(Long id, ChamadoStatusUpdateDto dto) {
+        log.info("Iniciando alteração de status do chamado. id={}", id);
+
         ChamadoEntity chamado = buscarEntidadePorId(id);
 
-        chamado.setStatus(dto.status());
-        if (dto.status() == StatusChamadoEnum.FECHADO) {
+        StatusChamadoEnum statusAnterior = chamado.getStatus();
+        StatusChamadoEnum novoStatus = dto.status();
+
+        log.debug("Alterando status do chamado. id={}, statusAnterior={}, novoStatus={}",
+                id,
+                statusAnterior,
+                novoStatus);
+
+        chamado.setStatus(novoStatus);
+
+        if (novoStatus == StatusChamadoEnum.FECHADO) {
             chamado.setDataFechamento(LocalDateTime.now());
+
+            log.debug("Registrando data de fechamento do chamado. id={}", id);
         }
 
         ChamadoEntity atualizado = chamadoRepository.save(chamado);
+
+        log.info("Status do chamado alterado com sucesso. id={}, statusAnterior={}, novoStatus={}",
+                atualizado.getId(),
+                statusAnterior,
+                atualizado.getStatus());
+
         return chamadoMapper.toResponseDto(atualizado);
     }
 
     @Transactional
     public void excluirChamado(Long id) {
+        log.info("Iniciando exclusão de chamado. id={}", id);
+
         ChamadoEntity chamado = buscarEntidadePorId(id);
+        UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
+
+        log.debug("Excluindo chamado. id={}, usuarioId={}, status={}, empresaId={}",
+                chamado.getId(),
+                usuario.getId(),
+                chamado.getStatus(),
+                chamado.getEmpresa() != null ? chamado.getEmpresa().getId() : null);
+
         chamadoRepository.delete(chamado);
+
+        log.info("Chamado excluído com sucesso. id={}, usuarioId={}",
+                id,
+                usuario.getId());
     }
 
     // CLIENTE só acessa chamados da própria empresa. ADMIN acessa qualquer um.
