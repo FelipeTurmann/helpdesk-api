@@ -1,4 +1,4 @@
-package com.helpdesk_api.entity;
+package com.helpdesk_api.comentario.entity;
 
 import com.helpdesk_api.chamado.entity.ChamadoEntity;
 import com.helpdesk_api.usuario.entity.UsuarioEntity;
@@ -16,7 +16,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @AllArgsConstructor
 @ToString(exclude = {"usuario", "chamado"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Comentario {
+public class ComentarioEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
