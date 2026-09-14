@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ComentarioService {
@@ -40,6 +42,19 @@ public class ComentarioService {
         ComentarioEntity salvo = comentarioRepository.save(comentario);
         return comentarioMapper.toResponseDto(salvo);
     }
+
+    @Transactional(readOnly = true)
+    public List<ComentarioResponseDto> listarComentarios(Long chamadoId) {
+        ChamadoEntity chamado = buscarChamado(chamadoId);
+        UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
+
+        validarAcessoAoChamado(chamado, usuario);
+
+        return comentarioRepository.findByChamadoIdOrderByDataComentarioAsc(chamadoId).stream()
+                .map(comentarioMapper::toResponseDto)
+                .toList();
+    }
+
 
     private ChamadoEntity buscarChamado(Long chamadoId) {
         return chamadoRepository.findById(chamadoId)

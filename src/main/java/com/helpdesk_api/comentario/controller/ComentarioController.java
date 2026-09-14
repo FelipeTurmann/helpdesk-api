@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/chamados/{chamadoId}/comentarios")
 @RequiredArgsConstructor
@@ -25,6 +27,11 @@ public class ComentarioController {
     ) {
         ComentarioResponseDto response = comentarioService.adicionarComentario(chamadoId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ComentarioResponseDto>> listarComentarios(@PathVariable Long chamadoId) {
+        return ResponseEntity.ok(comentarioService.listarComentarios(chamadoId));
     }
 
 }
