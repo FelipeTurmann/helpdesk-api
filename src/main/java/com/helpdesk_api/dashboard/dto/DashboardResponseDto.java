@@ -1,4 +1,10 @@
 package com.helpdesk_api.dashboard.dto;
 
-public class DashboardResponseDto {
-}
+public record DashboardResponseDto(
+        long totalChamados,
+        long abertos,
+        long emAtendimento,
+        long aguardandoCliente,
+        long resolvidos,
+        long fechados
+) {}
