@@ -3,7 +3,9 @@ package com.helpdesk_api.util;
 import com.helpdesk_api.security.UsuarioDetailsImpl;
 import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UsuarioUtil {
 
     public UsuarioEntity usuarioAutenticado() {
