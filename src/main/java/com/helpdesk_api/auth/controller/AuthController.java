@@ -2,6 +2,7 @@ package com.helpdesk_api.auth.controller;
 
 import com.helpdesk_api.auth.dto.LoginRequestDto;
 import com.helpdesk_api.auth.dto.LoginResponseDto;
+import com.helpdesk_api.auth.controller.doc.AuthControllerDoc;
 import com.helpdesk_api.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthControllerDoc {
 
     private final AuthService authService;
 
     @PostMapping("/login")
+    @Override
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
         return ResponseEntity.ok(authService.login(request));
     }
