@@ -4,6 +4,7 @@ import com.helpdesk_api.chamado.dto.ChamadoFiltroConsultaDto;
 import com.helpdesk_api.chamado.dto.ChamadoRequestDto;
 import com.helpdesk_api.chamado.dto.ChamadoResponseDto;
 import com.helpdesk_api.chamado.dto.ChamadoStatusUpdateDto;
+import com.helpdesk_api.chamado.controller.doc.ChamadoControllerDoc;
 import com.helpdesk_api.chamado.service.ChamadoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/chamados")
 @RequiredArgsConstructor
-public class ChamadoController {
+public class ChamadoController implements ChamadoControllerDoc {
 
     private final ChamadoService chamadoService;
 
     @PostMapping
+    @Override
     @PreAuthorize("hasRole('CLIENTE')")
     public ResponseEntity<ChamadoResponseDto> abrirChamado(@Valid @RequestBody ChamadoRequestDto request) {
         ChamadoResponseDto response = chamadoService.abrirChamado(request);
@@ -30,18 +32,21 @@ public class ChamadoController {
     }
 
     @GetMapping
+    @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
     public ResponseEntity<List<ChamadoResponseDto>> listarChamados(@ParameterObject ChamadoFiltroConsultaDto filtro) {
         return ResponseEntity.ok(chamadoService.listarChamados(filtro));
     }
 
     @GetMapping("/{id}")
+    @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
     public ResponseEntity<ChamadoResponseDto> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(chamadoService.buscarChamadoPorId(id));
     }
 
     @PutMapping("/{id}")
+    @Override
     @PreAuthorize("hasRole('CLIENTE')")
     public ResponseEntity<ChamadoResponseDto> atualizarChamado(
             @PathVariable Long id,
@@ -51,6 +56,7 @@ public class ChamadoController {
     }
 
     @PatchMapping("/{id}/status")
+    @Override
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ChamadoResponseDto> alterarStatus(
             @PathVariable Long id,
@@ -60,6 +66,7 @@ public class ChamadoController {
     }
 
     @DeleteMapping("/{id}")
+    @Override
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         chamadoService.excluirChamado(id);
