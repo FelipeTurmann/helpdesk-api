@@ -2,6 +2,7 @@ package com.helpdesk_api.comentario.controller;
 
 import com.helpdesk_api.comentario.dto.ComentarioRequestDto;
 import com.helpdesk_api.comentario.dto.ComentarioResponseDto;
+import com.helpdesk_api.comentario.controller.doc.ComentarioControllerDoc;
 import com.helpdesk_api.comentario.service.ComentarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,12 @@ import java.util.List;
 @RequestMapping("/api/chamados/{chamadoId}/comentarios")
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
-public class ComentarioController {
+public class ComentarioController implements ComentarioControllerDoc {
 
     private final ComentarioService comentarioService;
 
     @PostMapping
+    @Override
     public ResponseEntity<ComentarioResponseDto> adicionarComentario(
             @PathVariable Long chamadoId,
             @Valid @RequestBody ComentarioRequestDto request
@@ -30,6 +32,7 @@ public class ComentarioController {
     }
 
     @GetMapping
+    @Override
     public ResponseEntity<List<ComentarioResponseDto>> listarComentarios(@PathVariable Long chamadoId) {
         return ResponseEntity.ok(comentarioService.listarComentarios(chamadoId));
     }
