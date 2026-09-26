@@ -3,6 +3,7 @@ package com.helpdesk_api.usuario.controller;
 import com.helpdesk_api.usuario.dto.UsuarioFiltroConsultaDto;
 import com.helpdesk_api.usuario.dto.UsuarioRequestDto;
 import com.helpdesk_api.usuario.dto.UsuarioResponseDto;
+import com.helpdesk_api.usuario.controller.doc.UsuarioControllerDoc;
 import com.helpdesk_api.usuario.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,27 +19,31 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/usuarios")
 @PreAuthorize("hasRole('ADMIN')")
-public class UsuarioController {
+public class UsuarioController implements UsuarioControllerDoc {
 
     private final UsuarioService usuarioService;
 
     @PostMapping
+    @Override
     public ResponseEntity<UsuarioResponseDto> criarUsuario(@Valid @RequestBody UsuarioRequestDto request) {
         UsuarioResponseDto response = usuarioService.criarUsuario(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
+    @Override
     public ResponseEntity<List<UsuarioResponseDto>> listarUsuarios(@ParameterObject UsuarioFiltroConsultaDto filtro) {
         return ResponseEntity.ok(usuarioService.listarUsuarios(filtro));
     }
 
     @GetMapping("/{id}")
+    @Override
     public ResponseEntity<UsuarioResponseDto> buscarUsuarioPorId(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.buscarUsuarioPorId(id));
     }
 
     @PutMapping("/{id}")
+    @Override
     public ResponseEntity<UsuarioResponseDto> atualizarUsuario(
             @PathVariable Long id,
             @Valid @RequestBody UsuarioRequestDto request
@@ -47,6 +52,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
+    @Override
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         usuarioService.excluirUsuario(id);
         return ResponseEntity.noContent().build();
