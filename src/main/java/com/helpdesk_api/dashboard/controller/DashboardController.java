@@ -1,6 +1,7 @@
 package com.helpdesk_api.dashboard.controller;
 
 import com.helpdesk_api.dashboard.dto.DashboardResponseDto;
+import com.helpdesk_api.dashboard.controller.doc.DashboardControllerDoc;
 import com.helpdesk_api.dashboard.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
-public class DashboardController {
+public class DashboardController implements DashboardControllerDoc {
 
     private final DashboardService dashboardService;
 
     @GetMapping
+    @Override
     public ResponseEntity<DashboardResponseDto> obterResumo() {
         return ResponseEntity.ok(dashboardService.obterResumo());
     }
