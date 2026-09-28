@@ -13,6 +13,7 @@ import com.helpdesk_api.usuario.entity.UsuarioEntity;
 import com.helpdesk_api.util.UsuarioUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,7 +124,9 @@ public class ComentarioService {
                     chamado.getEmpresa().getId(),
                     usuario.getEmpresa().getId());
 
-            // TODO tratar exception "Você não tem permissão para comentar neste chamado."
+            throw new AccessDeniedException(
+                    "Você não tem permissão para comentar neste chamado."
+            );
         }
 
         log.debug("Acesso ao chamado validado com sucesso. chamadoId={}, usuarioId={}",

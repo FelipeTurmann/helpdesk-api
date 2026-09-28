@@ -17,6 +17,7 @@ import com.helpdesk_api.util.UsuarioUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -215,7 +216,9 @@ public class ChamadoService {
                     chamado.getEmpresa().getId(),
                     usuario.getEmpresa().getId());
 
-            // TODO TRATAR EXCEPTION "Você não tem permissão para acessar este chamado."
+            throw new AccessDeniedException(
+                    "Você não tem permissão para acessar este chamado."
+            );
         }
 
         log.debug("Acesso ao chamado validado com sucesso. chamadoId={}, usuarioId={}",
