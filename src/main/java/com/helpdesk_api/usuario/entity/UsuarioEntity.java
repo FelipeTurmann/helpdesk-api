@@ -18,28 +18,27 @@ import org.hibernate.annotations.CreationTimestamp;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UsuarioEntity {
 
-    //TODO mapear o name das colunas
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
+    @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "nome", nullable = false)
     private String nome;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "senha", nullable = false)
     private String senha;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "cargo", nullable = false)
     private CargoEnum cargo;
 
     @Builder.Default
-    @Column(nullable = false)
+    @Column(name = "ativo", nullable = false)
     private Boolean ativo = true;
 
     @CreationTimestamp
