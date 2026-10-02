@@ -22,6 +22,7 @@ public class EmpresaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "nome", nullable = false)
@@ -37,7 +38,7 @@ public class EmpresaEntity {
     private String email;
 
     @Builder.Default
-    @Column(nullable = false)
+    @Column(name = "ativo", nullable = false)
     private Boolean ativo = true;
 
     @CreationTimestamp
