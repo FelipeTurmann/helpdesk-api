@@ -21,9 +21,10 @@ public class ComentarioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
+    @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(name = "texto", nullable = false, columnDefinition = "TEXT")
     private String texto;
 
     @CreationTimestamp
