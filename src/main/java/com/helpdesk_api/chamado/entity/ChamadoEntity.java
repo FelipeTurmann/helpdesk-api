@@ -25,23 +25,24 @@ public class ChamadoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
+    @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "titulo", nullable = false)
     private String titulo;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(name = "descricao", nullable = false, columnDefinition = "TEXT")
     private String descricao;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private StatusChamadoEnum status;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "prioridade", nullable = false)
     private PrioridadeEnum prioridade;
 
-    @Column(nullable = false)
+    @Column(name = "categoria", nullable = false)
     private String categoria;
 
     @CreationTimestamp
