@@ -16,17 +16,17 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
+  private final AuthenticationManager authenticationManager;
+  private final JwtService jwtService;
 
-    public LoginResponseDto login(LoginRequestDto request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.senha())
-        );
+  public LoginResponseDto login(LoginRequestDto request) {
+    Authentication authentication =
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.email(), request.senha()));
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtService.generateToken(Objects.requireNonNull(userDetails));
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    String token = jwtService.generateToken(Objects.requireNonNull(userDetails));
 
-        return new LoginResponseDto(token);
-    }
+    return new LoginResponseDto(token);
+  }
 }

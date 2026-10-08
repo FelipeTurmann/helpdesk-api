@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController implements AuthControllerDoc {
 
-    private final AuthService authService;
+  private final AuthService authService;
 
-    @PostMapping("/login")
-    @Override
-    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
-        return ResponseEntity.ok(authService.login(request));
-    }
+  @PostMapping("/login")
+  @Override
+  public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
+    return ResponseEntity.ok(authService.login(request));
+  }
 }
