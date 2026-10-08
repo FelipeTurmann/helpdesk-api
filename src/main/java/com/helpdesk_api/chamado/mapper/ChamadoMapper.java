@@ -10,20 +10,19 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface ChamadoMapper {
 
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "empresa", ignore = true)
-    @Mapping(target = "usuarioAbertura", ignore = true)
-    ChamadoEntity toEntity(ChamadoRequestDto dto);
+  @Mapping(target = "status", ignore = true)
+  @Mapping(target = "empresa", ignore = true)
+  @Mapping(target = "usuarioAbertura", ignore = true)
+  ChamadoEntity toEntity(ChamadoRequestDto dto);
 
-    @Mapping(target = "empresaId", source = "empresa.id")
-    @Mapping(target = "empresaNome", source = "empresa.nome")
-    @Mapping(target = "usuarioAberturaId", source = "usuarioAbertura.id")
-    @Mapping(target = "usuarioAberturaNome", source = "usuarioAbertura.nome")
-    ChamadoResponseDto toResponseDto(ChamadoEntity entity);
+  @Mapping(target = "empresaId", source = "empresa.id")
+  @Mapping(target = "empresaNome", source = "empresa.nome")
+  @Mapping(target = "usuarioAberturaId", source = "usuarioAbertura.id")
+  @Mapping(target = "usuarioAberturaNome", source = "usuarioAbertura.nome")
+  ChamadoResponseDto toResponseDto(ChamadoEntity entity);
 
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "empresa", ignore = true)
-    @Mapping(target = "usuarioAbertura", ignore = true)
-    void updateEntityFromDto(ChamadoRequestDto dto, @MappingTarget ChamadoEntity entity);
-
+  @Mapping(target = "status", ignore = true)
+  @Mapping(target = "empresa", ignore = true)
+  @Mapping(target = "usuarioAbertura", ignore = true)
+  void updateEntityFromDto(ChamadoRequestDto dto, @MappingTarget ChamadoEntity entity);
 }

@@ -22,45 +22,45 @@ import org.hibernate.annotations.UpdateTimestamp;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ChamadoEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @EqualsAndHashCode.Include
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "titulo", nullable = false)
-    private String titulo;
+  @Column(name = "titulo", nullable = false)
+  private String titulo;
 
-    @Column(name = "descricao", nullable = false, columnDefinition = "TEXT")
-    private String descricao;
+  @Column(name = "descricao", nullable = false, columnDefinition = "TEXT")
+  private String descricao;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private StatusChamadoEnum status;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private StatusChamadoEnum status;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "prioridade", nullable = false)
-    private PrioridadeEnum prioridade;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "prioridade", nullable = false)
+  private PrioridadeEnum prioridade;
 
-    @Column(name = "categoria", nullable = false)
-    private String categoria;
+  @Column(name = "categoria", nullable = false)
+  private String categoria;
 
-    @CreationTimestamp
-    @Column(name = "data_abertura", nullable = false, updatable = false)
-    private LocalDateTime dataAbertura;
+  @CreationTimestamp
+  @Column(name = "data_abertura", nullable = false, updatable = false)
+  private LocalDateTime dataAbertura;
 
-    @UpdateTimestamp
-    @Column(name = "data_atualizacao", nullable = false)
-    private LocalDateTime dataAtualizacao;
+  @UpdateTimestamp
+  @Column(name = "data_atualizacao", nullable = false)
+  private LocalDateTime dataAtualizacao;
 
-    @Column(name = "data_fechamento")
-    private LocalDateTime dataFechamento;
+  @Column(name = "data_fechamento")
+  private LocalDateTime dataFechamento;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empresa_id", nullable = false)
-    private EmpresaEntity empresa;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "empresa_id", nullable = false)
+  private EmpresaEntity empresa;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private UsuarioEntity usuarioAbertura;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "usuario_id", nullable = false)
+  private UsuarioEntity usuarioAbertura;
 }

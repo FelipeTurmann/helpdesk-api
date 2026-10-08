@@ -10,14 +10,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ChamadoRepository extends JpaRepository<ChamadoEntity, Long>, JpaSpecificationExecutor<ChamadoEntity> {
+public interface ChamadoRepository
+    extends JpaRepository<ChamadoEntity, Long>, JpaSpecificationExecutor<ChamadoEntity> {
 
-    @Query("SELECT c.status AS status, COUNT(c) AS total FROM ChamadoEntity c GROUP BY c.status")
-    List<StatusCountProjection> contarPorStatus();
+  @Query("SELECT c.status AS status, COUNT(c) AS total FROM ChamadoEntity c GROUP BY c.status")
+  List<StatusCountProjection> contarPorStatus();
 
-    interface StatusCountProjection {
-        StatusChamadoEnum getStatus();
-        Long getTotal();
-    }
+  interface StatusCountProjection {
+    StatusChamadoEnum getStatus();
 
+    Long getTotal();
+  }
 }

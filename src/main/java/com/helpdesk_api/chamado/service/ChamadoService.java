@@ -29,213 +29,217 @@ import java.util.List;
 @Slf4j
 public class ChamadoService {
 
-    private final ChamadoRepository chamadoRepository;
-    private final ChamadoMapper chamadoMapper;
-    private final UsuarioUtil usuarioUtil;
+  private final ChamadoRepository chamadoRepository;
+  private final ChamadoMapper chamadoMapper;
+  private final UsuarioUtil usuarioUtil;
 
-    @Transactional
-    public ChamadoResponseDto abrirChamado(ChamadoRequestDto request) {
-        log.info("Iniciando abertura de chamado.");
+  @Transactional
+  public ChamadoResponseDto abrirChamado(ChamadoRequestDto request) {
+    log.info("Iniciando abertura de chamado.");
 
-        UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
+    UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
 
-        log.debug("Usuário autenticado para abertura do chamado. id={}, cargo={}, empresaId={}",
-                usuario.getId(),
-                usuario.getCargo(),
-                usuario.getEmpresa() != null ? usuario.getEmpresa().getId() : null);
+    log.debug(
+        "Usuário autenticado para abertura do chamado. id={}, cargo={}, empresaId={}",
+        usuario.getId(),
+        usuario.getCargo(),
+        usuario.getEmpresa() != null ? usuario.getEmpresa().getId() : null);
 
-        ChamadoEntity chamado = chamadoMapper.toEntity(request);
-        chamado.setStatus(StatusChamadoEnum.ABERTO);
-        chamado.setEmpresa(usuario.getEmpresa());
-        chamado.setUsuarioAbertura(usuario);
+    ChamadoEntity chamado = chamadoMapper.toEntity(request);
+    chamado.setStatus(StatusChamadoEnum.ABERTO);
+    chamado.setEmpresa(usuario.getEmpresa());
+    chamado.setUsuarioAbertura(usuario);
 
-        ChamadoEntity salvo = chamadoRepository.save(chamado);
+    ChamadoEntity salvo = chamadoRepository.save(chamado);
 
-        log.info("Chamado aberto com sucesso. id={}, usuarioAberturaId={}, empresaId={}",
-                salvo.getId(),
-                usuario.getId(),
-                usuario.getEmpresa() != null ? usuario.getEmpresa().getId() : null);
+    log.info(
+        "Chamado aberto com sucesso. id={}, usuarioAberturaId={}, empresaId={}",
+        salvo.getId(),
+        usuario.getId(),
+        usuario.getEmpresa() != null ? usuario.getEmpresa().getId() : null);
 
-        return chamadoMapper.toResponseDto(salvo);
+    return chamadoMapper.toResponseDto(salvo);
+  }
+
+  @Transactional(readOnly = true)
+  public List<ChamadoResponseDto> listarChamados(ChamadoFiltroConsultaDto filtro) {
+    log.info("Iniciando listagem de chamados.");
+
+    UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
+
+    // CLIENTE só pode ver chamados da própria empresa, independente do que vier no filtro.
+    Long empresaIdEfetivo =
+        usuario.getCargo() == CargoEnum.CLIENTE ? usuario.getEmpresa().getId() : filtro.empresaId();
+
+    log.debug(
+        "Filtros da listagem de chamados. usuarioId={}, cargo={}, status={}, prioridade={}, "
+            + "categoria={}, empresaIdFiltro={}, empresaIdEfetivo={}",
+        usuario.getId(),
+        usuario.getCargo(),
+        filtro.status(),
+        filtro.prioridade(),
+        filtro.categoria(),
+        filtro.empresaId(),
+        empresaIdEfetivo);
+
+    Specification<ChamadoEntity> specification =
+        Specification.allOf(
+            ChamadoSpecification.comStatus(filtro.status()),
+            ChamadoSpecification.comPrioridade(filtro.prioridade()),
+            ChamadoSpecification.comCategoria(filtro.categoria()),
+            ChamadoSpecification.comEmpresaId(empresaIdEfetivo));
+
+    List<ChamadoResponseDto> chamados =
+        chamadoRepository.findAll(specification).stream()
+            .map(chamadoMapper::toResponseDto)
+            .toList();
+
+    log.info(
+        "Listagem de chamados concluída com sucesso. usuarioId={}, quantidade={}",
+        usuario.getId(),
+        chamados.size());
+
+    return chamados;
+  }
+
+  @Transactional(readOnly = true)
+  public ChamadoResponseDto buscarChamadoPorId(Long id) {
+    log.info("Iniciando busca de chamado. id={}", id);
+
+    ChamadoEntity chamado = buscarEntidadePorId(id);
+
+    validarAcessoAoChamado(chamado);
+
+    log.info(
+        "Chamado encontrado com sucesso. id={}, status={}", chamado.getId(), chamado.getStatus());
+
+    return chamadoMapper.toResponseDto(chamado);
+  }
+
+  @Transactional
+  public ChamadoResponseDto atualizarChamado(Long id, ChamadoRequestDto request) {
+    log.info("Iniciando atualização de chamado. id={}", id);
+
+    ChamadoEntity chamado = buscarEntidadePorId(id);
+
+    validarAcessoAoChamado(chamado);
+
+    log.debug(
+        "Validando status do chamado para atualização. id={}, status={}", id, chamado.getStatus());
+
+    if (chamado.getStatus() != StatusChamadoEnum.ABERTO) {
+      log.warn(
+          "Chamado não pode ser atualizado pois não está ABERTO. id={}, status={}",
+          id,
+          chamado.getStatus());
+
+      throw new BusinessException("Chamado só pode ser editado enquanto estiver ABERTO.");
     }
 
-    @Transactional(readOnly = true)
-    public List<ChamadoResponseDto> listarChamados(ChamadoFiltroConsultaDto filtro) {
-        log.info("Iniciando listagem de chamados.");
+    chamadoMapper.updateEntityFromDto(request, chamado);
 
-        UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
+    ChamadoEntity atualizado = chamadoRepository.save(chamado);
 
-        // CLIENTE só pode ver chamados da própria empresa, independente do que vier no filtro.
-        Long empresaIdEfetivo = usuario.getCargo() == CargoEnum.CLIENTE
-                ? usuario.getEmpresa().getId()
-                : filtro.empresaId();
+    log.info(
+        "Chamado atualizado com sucesso. id={}, status={}",
+        atualizado.getId(),
+        atualizado.getStatus());
 
-        log.debug("Filtros da listagem de chamados. usuarioId={}, cargo={}, status={}, prioridade={}, "
-                        + "categoria={}, empresaIdFiltro={}, empresaIdEfetivo={}",
-                usuario.getId(),
-                usuario.getCargo(),
-                filtro.status(),
-                filtro.prioridade(),
-                filtro.categoria(),
-                filtro.empresaId(),
-                empresaIdEfetivo);
+    return chamadoMapper.toResponseDto(atualizado);
+  }
 
-        Specification<ChamadoEntity> specification = Specification.allOf(
-                ChamadoSpecification.comStatus(filtro.status()),
-                ChamadoSpecification.comPrioridade(filtro.prioridade()),
-                ChamadoSpecification.comCategoria(filtro.categoria()),
-                ChamadoSpecification.comEmpresaId(empresaIdEfetivo)
-        );
+  @Transactional
+  public ChamadoResponseDto alterarStatus(Long id, ChamadoStatusUpdateDto dto) {
+    log.info("Iniciando alteração de status do chamado. id={}", id);
 
-        List<ChamadoResponseDto> chamados = chamadoRepository.findAll(specification).stream()
-                .map(chamadoMapper::toResponseDto)
-                .toList();
+    ChamadoEntity chamado = buscarEntidadePorId(id);
 
-        log.info("Listagem de chamados concluída com sucesso. usuarioId={}, quantidade={}",
-                usuario.getId(),
-                chamados.size());
+    StatusChamadoEnum statusAnterior = chamado.getStatus();
+    StatusChamadoEnum novoStatus = dto.status();
 
-        return chamados;
+    log.debug(
+        "Alterando status do chamado. id={}, statusAnterior={}, novoStatus={}",
+        id,
+        statusAnterior,
+        novoStatus);
+
+    chamado.setStatus(novoStatus);
+
+    if (novoStatus == StatusChamadoEnum.FECHADO) {
+      chamado.setDataFechamento(LocalDateTime.now());
+
+      log.debug("Registrando data de fechamento do chamado. id={}", id);
     }
 
-    @Transactional(readOnly = true)
-    public ChamadoResponseDto buscarChamadoPorId(Long id) {
-        log.info("Iniciando busca de chamado. id={}", id);
+    ChamadoEntity atualizado = chamadoRepository.save(chamado);
 
-        ChamadoEntity chamado = buscarEntidadePorId(id);
+    log.info(
+        "Status do chamado alterado com sucesso. id={}, statusAnterior={}, novoStatus={}",
+        atualizado.getId(),
+        statusAnterior,
+        atualizado.getStatus());
 
-        validarAcessoAoChamado(chamado);
+    return chamadoMapper.toResponseDto(atualizado);
+  }
 
-        log.info("Chamado encontrado com sucesso. id={}, status={}",
-                chamado.getId(),
-                chamado.getStatus());
+  @Transactional
+  public void excluirChamado(Long id) {
+    log.info("Iniciando exclusão de chamado. id={}", id);
 
-        return chamadoMapper.toResponseDto(chamado);
+    ChamadoEntity chamado = buscarEntidadePorId(id);
+    UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
+
+    log.debug(
+        "Excluindo chamado. id={}, usuarioId={}, status={}, empresaId={}",
+        chamado.getId(),
+        usuario.getId(),
+        chamado.getStatus(),
+        chamado.getEmpresa() != null ? chamado.getEmpresa().getId() : null);
+
+    chamadoRepository.delete(chamado);
+
+    log.info("Chamado excluído com sucesso. id={}, usuarioId={}", id, usuario.getId());
+  }
+
+  // CLIENTE só acessa chamados da própria empresa. ADMIN acessa qualquer um.
+  private void validarAcessoAoChamado(ChamadoEntity chamado) {
+    UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
+
+    log.debug(
+        "Validando acesso ao chamado. chamadoId={}, usuarioId={}, cargo={}",
+        chamado.getId(),
+        usuario.getId(),
+        usuario.getCargo());
+
+    if (usuario.getCargo() == CargoEnum.CLIENTE
+        && !chamado.getEmpresa().getId().equals(usuario.getEmpresa().getId())) {
+
+      log.warn(
+          "Acesso negado ao chamado. chamadoId={}, usuarioId={}, empresaChamadoId={}, empresaUsuarioId={}",
+          chamado.getId(),
+          usuario.getId(),
+          chamado.getEmpresa().getId(),
+          usuario.getEmpresa().getId());
+
+      throw new AccessDeniedException("Você não tem permissão para acessar este chamado.");
     }
 
-    @Transactional
-    public ChamadoResponseDto atualizarChamado(Long id, ChamadoRequestDto request) {
-        log.info("Iniciando atualização de chamado. id={}", id);
+    log.debug(
+        "Acesso ao chamado validado com sucesso. chamadoId={}, usuarioId={}",
+        chamado.getId(),
+        usuario.getId());
+  }
 
-        ChamadoEntity chamado = buscarEntidadePorId(id);
+  private ChamadoEntity buscarEntidadePorId(Long id) {
+    log.debug("Buscando chamado pelo id={}", id);
 
-        validarAcessoAoChamado(chamado);
+    return chamadoRepository
+        .findById(id)
+        .orElseThrow(
+            () -> {
+              log.warn("Chamado não encontrado. id={}", id);
 
-        log.debug("Validando status do chamado para atualização. id={}, status={}",
-                id,
-                chamado.getStatus());
-
-        if (chamado.getStatus() != StatusChamadoEnum.ABERTO) {
-            log.warn("Chamado não pode ser atualizado pois não está ABERTO. id={}, status={}",
-                    id,
-                    chamado.getStatus());
-
-            throw new BusinessException(
-                    "Chamado só pode ser editado enquanto estiver ABERTO."
-            );
-        }
-
-        chamadoMapper.updateEntityFromDto(request, chamado);
-
-        ChamadoEntity atualizado = chamadoRepository.save(chamado);
-
-        log.info("Chamado atualizado com sucesso. id={}, status={}",
-                atualizado.getId(),
-                atualizado.getStatus());
-
-        return chamadoMapper.toResponseDto(atualizado);
-    }
-
-    @Transactional
-    public ChamadoResponseDto alterarStatus(Long id, ChamadoStatusUpdateDto dto) {
-        log.info("Iniciando alteração de status do chamado. id={}", id);
-
-        ChamadoEntity chamado = buscarEntidadePorId(id);
-
-        StatusChamadoEnum statusAnterior = chamado.getStatus();
-        StatusChamadoEnum novoStatus = dto.status();
-
-        log.debug("Alterando status do chamado. id={}, statusAnterior={}, novoStatus={}",
-                id,
-                statusAnterior,
-                novoStatus);
-
-        chamado.setStatus(novoStatus);
-
-        if (novoStatus == StatusChamadoEnum.FECHADO) {
-            chamado.setDataFechamento(LocalDateTime.now());
-
-            log.debug("Registrando data de fechamento do chamado. id={}", id);
-        }
-
-        ChamadoEntity atualizado = chamadoRepository.save(chamado);
-
-        log.info("Status do chamado alterado com sucesso. id={}, statusAnterior={}, novoStatus={}",
-                atualizado.getId(),
-                statusAnterior,
-                atualizado.getStatus());
-
-        return chamadoMapper.toResponseDto(atualizado);
-    }
-
-    @Transactional
-    public void excluirChamado(Long id) {
-        log.info("Iniciando exclusão de chamado. id={}", id);
-
-        ChamadoEntity chamado = buscarEntidadePorId(id);
-        UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
-
-        log.debug("Excluindo chamado. id={}, usuarioId={}, status={}, empresaId={}",
-                chamado.getId(),
-                usuario.getId(),
-                chamado.getStatus(),
-                chamado.getEmpresa() != null ? chamado.getEmpresa().getId() : null);
-
-        chamadoRepository.delete(chamado);
-
-        log.info("Chamado excluído com sucesso. id={}, usuarioId={}",
-                id,
-                usuario.getId());
-    }
-
-    // CLIENTE só acessa chamados da própria empresa. ADMIN acessa qualquer um.
-    private void validarAcessoAoChamado(ChamadoEntity chamado) {
-        UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
-
-        log.debug("Validando acesso ao chamado. chamadoId={}, usuarioId={}, cargo={}",
-                chamado.getId(),
-                usuario.getId(),
-                usuario.getCargo());
-
-        if (usuario.getCargo() == CargoEnum.CLIENTE
-                && !chamado.getEmpresa().getId().equals(usuario.getEmpresa().getId())) {
-
-            log.warn("Acesso negado ao chamado. chamadoId={}, usuarioId={}, empresaChamadoId={}, empresaUsuarioId={}",
-                    chamado.getId(),
-                    usuario.getId(),
-                    chamado.getEmpresa().getId(),
-                    usuario.getEmpresa().getId());
-
-            throw new AccessDeniedException(
-                    "Você não tem permissão para acessar este chamado."
-            );
-        }
-
-        log.debug("Acesso ao chamado validado com sucesso. chamadoId={}, usuarioId={}",
-                chamado.getId(),
-                usuario.getId());
-    }
-
-    private ChamadoEntity buscarEntidadePorId(Long id) {
-        log.debug("Buscando chamado pelo id={}", id);
-
-        return chamadoRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Chamado não encontrado. id={}", id);
-
-                    return new ResourceNotFoundException(
-                            "Chamado não encontrado: " + id
-                    );
-                });
-    }
+              return new ResourceNotFoundException("Chamado não encontrado: " + id);
+            });
+  }
 }

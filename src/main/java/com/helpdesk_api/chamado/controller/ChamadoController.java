@@ -21,55 +21,53 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChamadoController implements ChamadoControllerDoc {
 
-    private final ChamadoService chamadoService;
+  private final ChamadoService chamadoService;
 
-    @PostMapping
-    @Override
-    @PreAuthorize("hasRole('CLIENTE')")
-    public ResponseEntity<ChamadoResponseDto> abrirChamado(@Valid @RequestBody ChamadoRequestDto request) {
-        ChamadoResponseDto response = chamadoService.abrirChamado(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @PostMapping
+  @Override
+  @PreAuthorize("hasRole('CLIENTE')")
+  public ResponseEntity<ChamadoResponseDto> abrirChamado(
+      @Valid @RequestBody ChamadoRequestDto request) {
+    ChamadoResponseDto response = chamadoService.abrirChamado(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
-    @GetMapping
-    @Override
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
-    public ResponseEntity<List<ChamadoResponseDto>> listarChamados(@ParameterObject ChamadoFiltroConsultaDto filtro) {
-        return ResponseEntity.ok(chamadoService.listarChamados(filtro));
-    }
+  @GetMapping
+  @Override
+  @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
+  public ResponseEntity<List<ChamadoResponseDto>> listarChamados(
+      @ParameterObject ChamadoFiltroConsultaDto filtro) {
+    return ResponseEntity.ok(chamadoService.listarChamados(filtro));
+  }
 
-    @GetMapping("/{id}")
-    @Override
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
-    public ResponseEntity<ChamadoResponseDto> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(chamadoService.buscarChamadoPorId(id));
-    }
+  @GetMapping("/{id}")
+  @Override
+  @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
+  public ResponseEntity<ChamadoResponseDto> buscarPorId(@PathVariable Long id) {
+    return ResponseEntity.ok(chamadoService.buscarChamadoPorId(id));
+  }
 
-    @PutMapping("/{id}")
-    @Override
-    @PreAuthorize("hasRole('CLIENTE')")
-    public ResponseEntity<ChamadoResponseDto> atualizarChamado(
-            @PathVariable Long id,
-            @Valid @RequestBody ChamadoRequestDto request
-    ) {
-        return ResponseEntity.ok(chamadoService.atualizarChamado(id, request));
-    }
+  @PutMapping("/{id}")
+  @Override
+  @PreAuthorize("hasRole('CLIENTE')")
+  public ResponseEntity<ChamadoResponseDto> atualizarChamado(
+      @PathVariable Long id, @Valid @RequestBody ChamadoRequestDto request) {
+    return ResponseEntity.ok(chamadoService.atualizarChamado(id, request));
+  }
 
-    @PatchMapping("/{id}/status")
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ChamadoResponseDto> alterarStatus(
-            @PathVariable Long id,
-            @Valid @RequestBody ChamadoStatusUpdateDto dto
-    ) {
-        return ResponseEntity.ok(chamadoService.alterarStatus(id, dto));
-    }
+  @PatchMapping("/{id}/status")
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<ChamadoResponseDto> alterarStatus(
+      @PathVariable Long id, @Valid @RequestBody ChamadoStatusUpdateDto dto) {
+    return ResponseEntity.ok(chamadoService.alterarStatus(id, dto));
+  }
 
-    @DeleteMapping("/{id}")
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        chamadoService.excluirChamado(id);
-        return ResponseEntity.noContent().build();
-    }
+  @DeleteMapping("/{id}")
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<Void> excluir(@PathVariable Long id) {
+    chamadoService.excluirChamado(id);
+    return ResponseEntity.noContent().build();
+  }
 }
