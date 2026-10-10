@@ -22,43 +22,42 @@ import java.util.List;
 @PreAuthorize("hasRole('ADMIN')")
 public class EmpresaController implements EmpresaControllerDoc {
 
-    private final EmpresaService empresaService;
+  private final EmpresaService empresaService;
 
-    @PostMapping
-    @Override
-    public ResponseEntity<EmpresaResponseDto> criarEmpresa(@Valid @RequestBody EmpresaRequestDto requestDto) {
-        EmpresaResponseDto response = empresaService.criarEmpresa(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @PostMapping
+  @Override
+  public ResponseEntity<EmpresaResponseDto> criarEmpresa(
+      @Valid @RequestBody EmpresaRequestDto requestDto) {
+    EmpresaResponseDto response = empresaService.criarEmpresa(requestDto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
-    @GetMapping
-    @Override
-    public ResponseEntity<List<EmpresaResponseDto>> listarEmpresas(@ParameterObject EmpresaFiltroConsultaDto requestDto) {
-        List<EmpresaResponseDto> response = empresaService.listarEmpresas(requestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+  @GetMapping
+  @Override
+  public ResponseEntity<List<EmpresaResponseDto>> listarEmpresas(
+      @ParameterObject EmpresaFiltroConsultaDto requestDto) {
+    List<EmpresaResponseDto> response = empresaService.listarEmpresas(requestDto);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
 
-    @GetMapping({"/{idEmpresa}"})
-    @Override
-    public ResponseEntity<EmpresaResponseDto> listarEmpresaPorId(@PathVariable Long idEmpresa) {
-        EmpresaResponseDto response = empresaService.listarEmpresaPorId(idEmpresa);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+  @GetMapping({"/{idEmpresa}"})
+  @Override
+  public ResponseEntity<EmpresaResponseDto> listarEmpresaPorId(@PathVariable Long idEmpresa) {
+    EmpresaResponseDto response = empresaService.listarEmpresaPorId(idEmpresa);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
 
-    @PutMapping("/{id}")
-    @Override
-    public ResponseEntity<EmpresaResponseDto> atualizar(
-            @PathVariable Long id,
-            @Valid @RequestBody EmpresaRequestDto request
-    ) {
-        return ResponseEntity.ok(empresaService.atualizar(id, request));
-    }
+  @PutMapping("/{id}")
+  @Override
+  public ResponseEntity<EmpresaResponseDto> atualizar(
+      @PathVariable Long id, @Valid @RequestBody EmpresaRequestDto request) {
+    return ResponseEntity.ok(empresaService.atualizar(id, request));
+  }
 
-    @DeleteMapping("/{id}")
-    @Override
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        empresaService.excluir(id);
-        return ResponseEntity.noContent().build();
-    }
-
+  @DeleteMapping("/{id}")
+  @Override
+  public ResponseEntity<Void> excluir(@PathVariable Long id) {
+    empresaService.excluir(id);
+    return ResponseEntity.noContent().build();
+  }
 }

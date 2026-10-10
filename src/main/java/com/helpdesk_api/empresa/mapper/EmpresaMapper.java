@@ -9,9 +9,9 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface EmpresaMapper {
 
-    EmpresaEntity toEntity(EmpresaRequestDto dto);
+  EmpresaEntity toEntity(EmpresaRequestDto dto);
 
-    EmpresaResponseDto toResponseDTO(EmpresaEntity entity);
+  EmpresaResponseDto toResponseDTO(EmpresaEntity entity);
 
-    void updateEntityFromDto(EmpresaRequestDto  dto, @MappingTarget EmpresaEntity entity);
+  void updateEntityFromDto(EmpresaRequestDto dto, @MappingTarget EmpresaEntity entity);
 }

@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface EmpresaRepository extends JpaRepository<EmpresaEntity, Long>, JpaSpecificationExecutor<EmpresaEntity> {
+public interface EmpresaRepository
+    extends JpaRepository<EmpresaEntity, Long>, JpaSpecificationExecutor<EmpresaEntity> {
 
-    Optional<EmpresaEntity> findByCnpj(String cnpj);
+  Optional<EmpresaEntity> findByCnpj(String cnpj);
 
-    boolean existsByCnpj(String cnpj);
+  boolean existsByCnpj(String cnpj);
 }

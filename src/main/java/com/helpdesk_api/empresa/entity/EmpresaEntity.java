@@ -19,37 +19,37 @@ import org.hibernate.annotations.CreationTimestamp;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EmpresaEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @EqualsAndHashCode.Include
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "nome", nullable = false)
-    private String nome;
+  @Column(name = "nome", nullable = false)
+  private String nome;
 
-    @Column(name = "cnpj", nullable = false, unique = true, length = 14)
-    private String cnpj;
+  @Column(name = "cnpj", nullable = false, unique = true, length = 14)
+  private String cnpj;
 
-    @Column(name = "telefone")
-    private String telefone;
+  @Column(name = "telefone")
+  private String telefone;
 
-    @Column(name = "email")
-    private String email;
+  @Column(name = "email")
+  private String email;
 
-    @Builder.Default
-    @Column(name = "ativo", nullable = false)
-    private Boolean ativo = true;
+  @Builder.Default
+  @Column(name = "ativo", nullable = false)
+  private Boolean ativo = true;
 
-    @CreationTimestamp
-    @Column(name = "data_cadastro", nullable = false, updatable = false)
-    private LocalDateTime dataCadastro;
+  @CreationTimestamp
+  @Column(name = "data_cadastro", nullable = false, updatable = false)
+  private LocalDateTime dataCadastro;
 
-    @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<UsuarioEntity> usuarios = new java.util.ArrayList<>();
+  @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY)
+  @Builder.Default
+  private List<UsuarioEntity> usuarios = new java.util.ArrayList<>();
 
-    @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<ChamadoEntity> chamados = new java.util.ArrayList<>();
+  @OneToMany(mappedBy = "empresa", fetch = FetchType.LAZY)
+  @Builder.Default
+  private List<ChamadoEntity> chamados = new java.util.ArrayList<>();
 }
