@@ -27,169 +27,171 @@ import java.util.List;
 @Slf4j
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
-    private final EmpresaRepository empresaRepository;
-    private final UsuarioMapper usuarioMapper;
-    private final PasswordEncoder passwordEncoder;
+  private final UsuarioRepository usuarioRepository;
+  private final EmpresaRepository empresaRepository;
+  private final UsuarioMapper usuarioMapper;
+  private final PasswordEncoder passwordEncoder;
 
-    @Transactional
-    public UsuarioResponseDto criarUsuario(UsuarioRequestDto request) {
-        log.info("Iniciando criação de usuário. email={}, cargo={}, empresaId={}",
-                request.email(), request.cargo(), request.empresaId());
+  @Transactional
+  public UsuarioResponseDto criarUsuario(UsuarioRequestDto request) {
+    log.info(
+        "Iniciando criação de usuário. email={}, cargo={}, empresaId={}",
+        request.email(),
+        request.cargo(),
+        request.empresaId());
 
-        if (usuarioRepository.existsByEmail(request.email())) {
-            log.warn("Usuário já cadastrado para o email={}", request.email());
-            throw new BusinessException("Já existe um usuário cadastrado com este email.");
-        }
-
-        validarEmpresaObrigatoria(request.cargo(), request.empresaId());
-        EmpresaEntity empresa = buscarEmpresa(request.empresaId());
-
-        UsuarioEntity usuario = usuarioMapper.toEntity(request);
-        usuario.setSenha(passwordEncoder.encode(request.senha()));
-        usuario.setAtivo(Boolean.TRUE);
-        usuario.setEmpresa(empresa);
-
-        UsuarioEntity salvo = usuarioRepository.save(usuario);
-
-        log.info("Usuário criado com sucesso. id={}, email={}",
-                salvo.getId(), salvo.getEmail());
-
-        return usuarioMapper.toResponseDto(salvo);
+    if (usuarioRepository.existsByEmail(request.email())) {
+      log.warn("Usuário já cadastrado para o email={}", request.email());
+      throw new BusinessException("Já existe um usuário cadastrado com este email.");
     }
 
-    @Transactional(readOnly = true)
-    public List<UsuarioResponseDto> listarUsuarios(UsuarioFiltroConsultaDto filtro) {
-        log.info("Iniciando busca de usuários. nome={}, email={}, cargo={}, empresaId={}, ativo={}",
-                filtro.nome(),
-                filtro.email(),
-                filtro.cargo(),
-                filtro.empresaId(),
-                filtro.ativo());
+    validarEmpresaObrigatoria(request.cargo(), request.empresaId());
+    EmpresaEntity empresa = buscarEmpresa(request.empresaId());
 
-        Specification<UsuarioEntity> specification = Specification.allOf(
-                UsuarioSpecification.comNome(filtro.nome()),
-                UsuarioSpecification.comEmail(filtro.email()),
-                UsuarioSpecification.comCargo(filtro.cargo()),
-                UsuarioSpecification.comEmpresaId(filtro.empresaId()),
-                UsuarioSpecification.comAtivo(filtro.ativo())
-        );
+    UsuarioEntity usuario = usuarioMapper.toEntity(request);
+    usuario.setSenha(passwordEncoder.encode(request.senha()));
+    usuario.setAtivo(Boolean.TRUE);
+    usuario.setEmpresa(empresa);
 
-        List<UsuarioResponseDto> usuarios = usuarioRepository.findAll(specification).stream()
-                .map(usuarioMapper::toResponseDto)
-                .toList();
+    UsuarioEntity salvo = usuarioRepository.save(usuario);
 
-        log.info("Busca finalizada com sucesso. Quantidade de usuários={}",
-                usuarios.size());
+    log.info("Usuário criado com sucesso. id={}, email={}", salvo.getId(), salvo.getEmail());
 
-        return usuarios;
+    return usuarioMapper.toResponseDto(salvo);
+  }
+
+  @Transactional(readOnly = true)
+  public List<UsuarioResponseDto> listarUsuarios(UsuarioFiltroConsultaDto filtro) {
+    log.info(
+        "Iniciando busca de usuários. nome={}, email={}, cargo={}, empresaId={}, ativo={}",
+        filtro.nome(),
+        filtro.email(),
+        filtro.cargo(),
+        filtro.empresaId(),
+        filtro.ativo());
+
+    Specification<UsuarioEntity> specification =
+        Specification.allOf(
+            UsuarioSpecification.comNome(filtro.nome()),
+            UsuarioSpecification.comEmail(filtro.email()),
+            UsuarioSpecification.comCargo(filtro.cargo()),
+            UsuarioSpecification.comEmpresaId(filtro.empresaId()),
+            UsuarioSpecification.comAtivo(filtro.ativo()));
+
+    List<UsuarioResponseDto> usuarios =
+        usuarioRepository.findAll(specification).stream()
+            .map(usuarioMapper::toResponseDto)
+            .toList();
+
+    log.info("Busca finalizada com sucesso. Quantidade de usuários={}", usuarios.size());
+
+    return usuarios;
+  }
+
+  @Transactional(readOnly = true)
+  public UsuarioResponseDto buscarUsuarioPorId(Long id) {
+    log.info("Iniciando busca de usuário. id={}", id);
+
+    UsuarioEntity usuario = buscarEntidadePorId(id);
+
+    log.info(
+        "Usuário encontrado com sucesso. id={}, email={}", usuario.getId(), usuario.getEmail());
+
+    return usuarioMapper.toResponseDto(usuario);
+  }
+
+  @Transactional
+  public UsuarioResponseDto atualizarUsuario(Long id, UsuarioRequestDto request) {
+    log.info(
+        "Iniciando atualização de usuário. id={}, email={}, cargo={}, empresaId={}",
+        id,
+        request.email(),
+        request.cargo(),
+        request.empresaId());
+
+    UsuarioEntity usuario = buscarEntidadePorId(id);
+
+    if (!usuario.getEmail().equals(request.email())
+        && usuarioRepository.existsByEmail(request.email())) {
+
+      log.warn(
+          "Não foi possível atualizar. Email já cadastrado. id={}, email={}", id, request.email());
+
+      throw new BusinessException("Já existe um usuário cadastrado com este email.");
     }
 
-    @Transactional(readOnly = true)
-    public UsuarioResponseDto buscarUsuarioPorId(Long id) {
-        log.info("Iniciando busca de usuário. id={}", id);
+    // validarEmpresaObrigatoria(request.cargo(), request.empresaId()); desabilitado temporariamente
+    EmpresaEntity empresa = buscarEmpresa(request.empresaId());
 
-        UsuarioEntity usuario = buscarEntidadePorId(id);
+    usuarioMapper.updateEntityFromDto(request, usuario);
+    usuario.setEmpresa(empresa);
 
-        log.info("Usuário encontrado com sucesso. id={}, email={}",
-                usuario.getId(), usuario.getEmail());
-
-        return usuarioMapper.toResponseDto(usuario);
+    // so re-hasheia a senha se uma nova senha foi realmente enviada
+    if (StringUtils.hasText(request.senha())) {
+      log.info("Nova senha informada. Realizando hash da senha. id={}", id);
+      usuario.setSenha(passwordEncoder.encode(request.senha()));
     }
 
-    @Transactional
-    public UsuarioResponseDto atualizarUsuario(Long id, UsuarioRequestDto request) {
-        log.info("Iniciando atualização de usuário. id={}, email={}, cargo={}, empresaId={}",
-                id,
-                request.email(),
-                request.cargo(),
-                request.empresaId());
+    UsuarioEntity atualizado = usuarioRepository.save(usuario);
 
-        UsuarioEntity usuario = buscarEntidadePorId(id);
+    log.info(
+        "Usuário atualizado com sucesso. id={}, email={}",
+        atualizado.getId(),
+        atualizado.getEmail());
 
-        if (!usuario.getEmail().equals(request.email())
-                && usuarioRepository.existsByEmail(request.email())) {
+    return usuarioMapper.toResponseDto(atualizado);
+  }
 
-            log.warn("Não foi possível atualizar. Email já cadastrado. id={}, email={}",
-                    id, request.email());
+  @Transactional
+  public void excluirUsuario(Long id) {
+    log.info("Iniciando exclusão de usuário. id={}", id);
 
-            throw new BusinessException("Já existe um usuário cadastrado com este email.");
-        }
+    UsuarioEntity usuario = buscarEntidadePorId(id);
 
-        // validarEmpresaObrigatoria(request.cargo(), request.empresaId()); desabilitado temporariamente
-        EmpresaEntity empresa = buscarEmpresa(request.empresaId());
+    usuarioRepository.delete(usuario);
 
-        usuarioMapper.updateEntityFromDto(request, usuario);
-        usuario.setEmpresa(empresa);
+    log.info("Usuário excluído com sucesso. id={}, email={}", usuario.getId(), usuario.getEmail());
+  }
 
-        // so re-hasheia a senha se uma nova senha foi realmente enviada
-        if (StringUtils.hasText(request.senha())) {
-            log.info("Nova senha informada. Realizando hash da senha. id={}", id);
-            usuario.setSenha(passwordEncoder.encode(request.senha()));
-        }
+  private void validarEmpresaObrigatoria(CargoEnum cargo, Long empresaId) {
+    log.debug("Validando empresa obrigatória. cargo={}, empresaId={}", cargo, empresaId);
 
-        UsuarioEntity atualizado = usuarioRepository.save(usuario);
+    if (cargo == CargoEnum.CLIENTE && empresaId == null) {
+      log.warn("Usuário CLIENTE sem empresa vinculada.");
 
-        log.info("Usuário atualizado com sucesso. id={}, email={}",
-                atualizado.getId(), atualizado.getEmail());
+      throw new BusinessException("Usuário com cargo CLIENTE deve estar vinculado a uma empresa.");
+    }
+  }
 
-        return usuarioMapper.toResponseDto(atualizado);
+  private UsuarioEntity buscarEntidadePorId(Long id) {
+    log.debug("Buscando usuário pelo id={}", id);
+
+    return usuarioRepository
+        .findById(id)
+        .orElseThrow(
+            () -> {
+              log.warn("Usuário não encontrado. id={}", id);
+
+              return new ResourceNotFoundException("Usuário não encontrado: " + id);
+            });
+  }
+
+  private EmpresaEntity buscarEmpresa(Long empresaId) {
+    if (empresaId == null) {
+      log.debug("Nenhuma empresa informada.");
+
+      return null;
     }
 
-    @Transactional
-    public void excluirUsuario(Long id) {
-        log.info("Iniciando exclusão de usuário. id={}", id);
+    log.debug("Buscando empresa pelo id={}", empresaId);
 
-        UsuarioEntity usuario = buscarEntidadePorId(id);
+    return empresaRepository
+        .findById(empresaId)
+        .orElseThrow(
+            () -> {
+              log.warn("Empresa não encontrada. id={}", empresaId);
 
-        usuarioRepository.delete(usuario);
-
-        log.info("Usuário excluído com sucesso. id={}, email={}",
-                usuario.getId(), usuario.getEmail());
-    }
-
-    private void validarEmpresaObrigatoria(CargoEnum cargo, Long empresaId) {
-        log.debug("Validando empresa obrigatória. cargo={}, empresaId={}",
-                cargo, empresaId);
-
-        if (cargo == CargoEnum.CLIENTE && empresaId == null) {
-            log.warn("Usuário CLIENTE sem empresa vinculada.");
-
-            throw new BusinessException(
-                    "Usuário com cargo CLIENTE deve estar vinculado a uma empresa."
-            );
-        }
-    }
-
-    private UsuarioEntity buscarEntidadePorId(Long id) {
-        log.debug("Buscando usuário pelo id={}", id);
-
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Usuário não encontrado. id={}", id);
-
-                    return new ResourceNotFoundException(
-                            "Usuário não encontrado: " + id
-                    );
-                });
-    }
-
-    private EmpresaEntity buscarEmpresa(Long empresaId) {
-        if (empresaId == null) {
-            log.debug("Nenhuma empresa informada.");
-
-            return null;
-        }
-
-        log.debug("Buscando empresa pelo id={}", empresaId);
-
-        return empresaRepository.findById(empresaId)
-                .orElseThrow(() -> {
-                    log.warn("Empresa não encontrada. id={}", empresaId);
-
-                    return new ResourceNotFoundException(
-                            "Empresa não encontrada: " + empresaId
-                    );
-                });
-    }
+              return new ResourceNotFoundException("Empresa não encontrada: " + empresaId);
+            });
+  }
 }

@@ -21,41 +21,40 @@ import java.util.List;
 @PreAuthorize("hasRole('ADMIN')")
 public class UsuarioController implements UsuarioControllerDoc {
 
-    private final UsuarioService usuarioService;
+  private final UsuarioService usuarioService;
 
-    @PostMapping
-    @Override
-    public ResponseEntity<UsuarioResponseDto> criarUsuario(@Valid @RequestBody UsuarioRequestDto request) {
-        UsuarioResponseDto response = usuarioService.criarUsuario(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @PostMapping
+  @Override
+  public ResponseEntity<UsuarioResponseDto> criarUsuario(
+      @Valid @RequestBody UsuarioRequestDto request) {
+    UsuarioResponseDto response = usuarioService.criarUsuario(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
-    @GetMapping
-    @Override
-    public ResponseEntity<List<UsuarioResponseDto>> listarUsuarios(@ParameterObject UsuarioFiltroConsultaDto filtro) {
-        return ResponseEntity.ok(usuarioService.listarUsuarios(filtro));
-    }
+  @GetMapping
+  @Override
+  public ResponseEntity<List<UsuarioResponseDto>> listarUsuarios(
+      @ParameterObject UsuarioFiltroConsultaDto filtro) {
+    return ResponseEntity.ok(usuarioService.listarUsuarios(filtro));
+  }
 
-    @GetMapping("/{id}")
-    @Override
-    public ResponseEntity<UsuarioResponseDto> buscarUsuarioPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.buscarUsuarioPorId(id));
-    }
+  @GetMapping("/{id}")
+  @Override
+  public ResponseEntity<UsuarioResponseDto> buscarUsuarioPorId(@PathVariable Long id) {
+    return ResponseEntity.ok(usuarioService.buscarUsuarioPorId(id));
+  }
 
-    @PutMapping("/{id}")
-    @Override
-    public ResponseEntity<UsuarioResponseDto> atualizarUsuario(
-            @PathVariable Long id,
-            @Valid @RequestBody UsuarioRequestDto request
-    ) {
-        return ResponseEntity.ok(usuarioService.atualizarUsuario(id, request));
-    }
+  @PutMapping("/{id}")
+  @Override
+  public ResponseEntity<UsuarioResponseDto> atualizarUsuario(
+      @PathVariable Long id, @Valid @RequestBody UsuarioRequestDto request) {
+    return ResponseEntity.ok(usuarioService.atualizarUsuario(id, request));
+  }
 
-    @DeleteMapping("/{id}")
-    @Override
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        usuarioService.excluirUsuario(id);
-        return ResponseEntity.noContent().build();
-    }
-
+  @DeleteMapping("/{id}")
+  @Override
+  public ResponseEntity<Void> excluir(@PathVariable Long id) {
+    usuarioService.excluirUsuario(id);
+    return ResponseEntity.noContent().build();
+  }
 }

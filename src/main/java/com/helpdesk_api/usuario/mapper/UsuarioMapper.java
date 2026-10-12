@@ -10,14 +10,14 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface UsuarioMapper {
 
-    @Mapping(target = "empresa", ignore = true)
-    UsuarioEntity toEntity(UsuarioRequestDto dto);
+  @Mapping(target = "empresa", ignore = true)
+  UsuarioEntity toEntity(UsuarioRequestDto dto);
 
-    @Mapping(target = "empresaId", source = "empresa.id")
-    @Mapping(target = "empresaNome", source = "empresa.nome")
-    UsuarioResponseDto toResponseDto(UsuarioEntity entity);
+  @Mapping(target = "empresaId", source = "empresa.id")
+  @Mapping(target = "empresaNome", source = "empresa.nome")
+  UsuarioResponseDto toResponseDto(UsuarioEntity entity);
 
-    @Mapping(target = "empresa", ignore = true)
-    @Mapping(target = "senha", ignore = true)
-    void updateEntityFromDto(UsuarioRequestDto dto, @MappingTarget UsuarioEntity entity);
+  @Mapping(target = "empresa", ignore = true)
+  @Mapping(target = "senha", ignore = true)
+  void updateEntityFromDto(UsuarioRequestDto dto, @MappingTarget UsuarioEntity entity);
 }
