@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasRole('ADMIN')")
 public class DashboardController implements DashboardControllerDoc {
 
-    private final DashboardService dashboardService;
+  private final DashboardService dashboardService;
 
-    @GetMapping
-    @Override
-    public ResponseEntity<DashboardResponseDto> obterResumo() {
-        return ResponseEntity.ok(dashboardService.obterResumo());
-    }
+  @GetMapping
+  @Override
+  public ResponseEntity<DashboardResponseDto> obterResumo() {
+    return ResponseEntity.ok(dashboardService.obterResumo());
+  }
 }

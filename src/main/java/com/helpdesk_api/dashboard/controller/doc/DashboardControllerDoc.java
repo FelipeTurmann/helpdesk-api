@@ -12,10 +12,18 @@ import org.springframework.http.ResponseEntity;
 
 @Tag(name = "Dashboard", description = "Indicadores consolidados de chamados. Requer perfil ADMIN.")
 public interface DashboardControllerDoc {
-    @Operation(summary = "Obter resumo do dashboard", description = "Retorna o total de chamados distribuído por status.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Resumo gerado.", content = @Content(schema = @Schema(implementation = DashboardResponseDto.class))),
-            @ApiResponse(responseCode = "403", description = "Acesso restrito a administradores.", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
-    })
-    ResponseEntity<DashboardResponseDto> obterResumo();
+  @Operation(
+      summary = "Obter resumo do dashboard",
+      description = "Retorna o total de chamados distribuído por status.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Resumo gerado.",
+        content = @Content(schema = @Schema(implementation = DashboardResponseDto.class))),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Acesso restrito a administradores.",
+        content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+  })
+  ResponseEntity<DashboardResponseDto> obterResumo();
 }
