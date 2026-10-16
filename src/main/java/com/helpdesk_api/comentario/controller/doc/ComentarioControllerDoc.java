@@ -14,14 +14,44 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
 
-@Tag(name = "Comentários", description = "Comentários vinculados a chamados. Requer perfil ADMIN ou CLIENTE.")
+@Tag(
+    name = "Comentários",
+    description = "Comentários vinculados a chamados. Requer perfil ADMIN ou CLIENTE.")
 public interface ComentarioControllerDoc {
-    @Operation(summary = "Adicionar comentário", description = "Inclui um comentário no chamado informado.")
-    @RequestBody(required = true, content = @Content(schema = @Schema(implementation = ComentarioRequestDto.class)))
-    @ApiResponses({@ApiResponse(responseCode = "201", description = "Comentário adicionado.", content = @Content(schema = @Schema(implementation = ComentarioResponseDto.class))), @ApiResponse(responseCode = "400", description = "Texto do comentário inválido.", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))), @ApiResponse(responseCode = "404", description = "Chamado não encontrado.", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))})
-    ResponseEntity<ComentarioResponseDto> adicionarComentario(@Parameter(description = "ID do chamado.", required = true, example = "1") Long chamadoId, ComentarioRequestDto request);
+  @Operation(
+      summary = "Adicionar comentário",
+      description = "Inclui um comentário no chamado informado.")
+  @RequestBody(
+      required = true,
+      content = @Content(schema = @Schema(implementation = ComentarioRequestDto.class)))
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "201",
+        description = "Comentário adicionado.",
+        content = @Content(schema = @Schema(implementation = ComentarioResponseDto.class))),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Texto do comentário inválido.",
+        content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
+    @ApiResponse(
+        responseCode = "404",
+        description = "Chamado não encontrado.",
+        content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+  })
+  ResponseEntity<ComentarioResponseDto> adicionarComentario(
+      @Parameter(description = "ID do chamado.", required = true, example = "1") Long chamadoId,
+      ComentarioRequestDto request);
 
-    @Operation(summary = "Listar comentários", description = "Retorna os comentários registrados para o chamado informado.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "Comentários encontrados."), @ApiResponse(responseCode = "404", description = "Chamado não encontrado.", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))})
-    ResponseEntity<List<ComentarioResponseDto>> listarComentarios(@Parameter(description = "ID do chamado.", required = true, example = "1") Long chamadoId);
+  @Operation(
+      summary = "Listar comentários",
+      description = "Retorna os comentários registrados para o chamado informado.")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Comentários encontrados."),
+    @ApiResponse(
+        responseCode = "404",
+        description = "Chamado não encontrado.",
+        content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+  })
+  ResponseEntity<List<ComentarioResponseDto>> listarComentarios(
+      @Parameter(description = "ID do chamado.", required = true, example = "1") Long chamadoId);
 }

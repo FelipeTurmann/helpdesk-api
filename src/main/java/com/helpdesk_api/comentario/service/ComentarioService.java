@@ -24,113 +24,113 @@ import java.util.List;
 @Slf4j
 public class ComentarioService {
 
-    private final ComentarioRepository comentarioRepository;
-    private final ChamadoRepository chamadoRepository;
-    private final ComentarioMapper comentarioMapper;
-    private final UsuarioUtil usuarioUtil;
+  private final ComentarioRepository comentarioRepository;
+  private final ChamadoRepository chamadoRepository;
+  private final ComentarioMapper comentarioMapper;
+  private final UsuarioUtil usuarioUtil;
 
-    @Transactional
-    public ComentarioResponseDto adicionarComentario(Long chamadoId, ComentarioRequestDto request) {
+  @Transactional
+  public ComentarioResponseDto adicionarComentario(Long chamadoId, ComentarioRequestDto request) {
 
-        log.info("Iniciando adição de comentário ao chamado. chamadoId={}", chamadoId);
+    log.info("Iniciando adição de comentário ao chamado. chamadoId={}", chamadoId);
 
-        ChamadoEntity chamado = buscarChamado(chamadoId);
-        UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
+    ChamadoEntity chamado = buscarChamado(chamadoId);
+    UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
 
-        log.debug("Usuário autenticado para adição de comentário. usuarioId={}, cargo={}, "
-                        + "chamadoId={}, empresaId={}",
-                usuario.getId(),
-                usuario.getCargo(),
-                chamadoId,
-                usuario.getEmpresa() != null ? usuario.getEmpresa().getId() : null);
+    log.debug(
+        "Usuário autenticado para adição de comentário. usuarioId={}, cargo={}, "
+            + "chamadoId={}, empresaId={}",
+        usuario.getId(),
+        usuario.getCargo(),
+        chamadoId,
+        usuario.getEmpresa() != null ? usuario.getEmpresa().getId() : null);
 
-        validarAcessoAoChamado(chamado, usuario);
+    validarAcessoAoChamado(chamado, usuario);
 
-        ComentarioEntity comentario = ComentarioEntity.builder()
-                .texto(request.texto())
-                .chamado(chamado)
-                .usuario(usuario)
-                .build();
+    ComentarioEntity comentario =
+        ComentarioEntity.builder().texto(request.texto()).chamado(chamado).usuario(usuario).build();
 
-        ComentarioEntity salvo = comentarioRepository.save(comentario);
+    ComentarioEntity salvo = comentarioRepository.save(comentario);
 
-        log.info("Comentário adicionado com sucesso. comentarioId={}, chamadoId={}, usuarioId={}",
-                salvo.getId(),
-                chamadoId,
-                usuario.getId());
+    log.info(
+        "Comentário adicionado com sucesso. comentarioId={}, chamadoId={}, usuarioId={}",
+        salvo.getId(),
+        chamadoId,
+        usuario.getId());
 
-        return comentarioMapper.toResponseDto(salvo);
+    return comentarioMapper.toResponseDto(salvo);
+  }
+
+  @Transactional(readOnly = true)
+  public List<ComentarioResponseDto> listarComentarios(Long chamadoId) {
+
+    log.info("Iniciando listagem de comentários do chamado. chamadoId={}", chamadoId);
+
+    ChamadoEntity chamado = buscarChamado(chamadoId);
+    UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
+
+    log.debug(
+        "Usuário autenticado para listagem de comentários. usuarioId={}, cargo={}, "
+            + "chamadoId={}, empresaId={}",
+        usuario.getId(),
+        usuario.getCargo(),
+        chamadoId,
+        usuario.getEmpresa() != null ? usuario.getEmpresa().getId() : null);
+
+    validarAcessoAoChamado(chamado, usuario);
+
+    List<ComentarioResponseDto> comentarios =
+        comentarioRepository.findByChamadoIdOrderByDataComentarioAsc(chamadoId).stream()
+            .map(comentarioMapper::toResponseDto)
+            .toList();
+
+    log.info(
+        "Listagem de comentários concluída com sucesso. chamadoId={}, quantidade={}",
+        chamadoId,
+        comentarios.size());
+
+    return comentarios;
+  }
+
+  private ChamadoEntity buscarChamado(Long chamadoId) {
+
+    log.debug("Buscando chamado pelo id={}", chamadoId);
+
+    return chamadoRepository
+        .findById(chamadoId)
+        .orElseThrow(
+            () -> {
+              log.warn("Chamado não encontrado. chamadoId={}", chamadoId);
+
+              return new ResourceNotFoundException("Chamado não encontrado: " + chamadoId);
+            });
+  }
+
+  private void validarAcessoAoChamado(ChamadoEntity chamado, UsuarioEntity usuario) {
+
+    log.debug(
+        "Validando acesso ao chamado para comentário. chamadoId={}, usuarioId={}, cargo={}",
+        chamado.getId(),
+        usuario.getId(),
+        usuario.getCargo());
+
+    if (usuario.getCargo() == CargoEnum.CLIENTE
+        && !chamado.getEmpresa().getId().equals(usuario.getEmpresa().getId())) {
+
+      log.warn(
+          "Acesso negado ao chamado para comentário. chamadoId={}, usuarioId={}, "
+              + "empresaChamadoId={}, empresaUsuarioId={}",
+          chamado.getId(),
+          usuario.getId(),
+          chamado.getEmpresa().getId(),
+          usuario.getEmpresa().getId());
+
+      throw new AccessDeniedException("Você não tem permissão para comentar neste chamado.");
     }
 
-    @Transactional(readOnly = true)
-    public List<ComentarioResponseDto> listarComentarios(Long chamadoId) {
-
-        log.info("Iniciando listagem de comentários do chamado. chamadoId={}", chamadoId);
-
-        ChamadoEntity chamado = buscarChamado(chamadoId);
-        UsuarioEntity usuario = usuarioUtil.usuarioAutenticado();
-
-        log.debug("Usuário autenticado para listagem de comentários. usuarioId={}, cargo={}, "
-                        + "chamadoId={}, empresaId={}",
-                usuario.getId(),
-                usuario.getCargo(),
-                chamadoId,
-                usuario.getEmpresa() != null ? usuario.getEmpresa().getId() : null);
-
-        validarAcessoAoChamado(chamado, usuario);
-
-        List<ComentarioResponseDto> comentarios =
-                comentarioRepository.findByChamadoIdOrderByDataComentarioAsc(chamadoId).stream()
-                        .map(comentarioMapper::toResponseDto)
-                        .toList();
-
-        log.info("Listagem de comentários concluída com sucesso. chamadoId={}, quantidade={}",
-                chamadoId,
-                comentarios.size());
-
-        return comentarios;
-    }
-
-    private ChamadoEntity buscarChamado(Long chamadoId) {
-
-        log.debug("Buscando chamado pelo id={}", chamadoId);
-
-        return chamadoRepository.findById(chamadoId)
-                .orElseThrow(() -> {
-                    log.warn("Chamado não encontrado. chamadoId={}", chamadoId);
-
-                    return new ResourceNotFoundException(
-                            "Chamado não encontrado: " + chamadoId
-                    );
-                });
-    }
-
-    private void validarAcessoAoChamado(
-            ChamadoEntity chamado,
-            UsuarioEntity usuario) {
-
-        log.debug("Validando acesso ao chamado para comentário. chamadoId={}, usuarioId={}, cargo={}",
-                chamado.getId(),
-                usuario.getId(),
-                usuario.getCargo());
-
-        if (usuario.getCargo() == CargoEnum.CLIENTE
-                && !chamado.getEmpresa().getId().equals(usuario.getEmpresa().getId())) {
-
-            log.warn("Acesso negado ao chamado para comentário. chamadoId={}, usuarioId={}, "
-                            + "empresaChamadoId={}, empresaUsuarioId={}",
-                    chamado.getId(),
-                    usuario.getId(),
-                    chamado.getEmpresa().getId(),
-                    usuario.getEmpresa().getId());
-
-            throw new AccessDeniedException(
-                    "Você não tem permissão para comentar neste chamado."
-            );
-        }
-
-        log.debug("Acesso ao chamado validado com sucesso. chamadoId={}, usuarioId={}",
-                chamado.getId(),
-                usuario.getId());
-    }
+    log.debug(
+        "Acesso ao chamado validado com sucesso. chamadoId={}, usuarioId={}",
+        chamado.getId(),
+        usuario.getId());
+  }
 }

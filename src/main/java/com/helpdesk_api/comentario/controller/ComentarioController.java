@@ -19,22 +19,20 @@ import java.util.List;
 @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
 public class ComentarioController implements ComentarioControllerDoc {
 
-    private final ComentarioService comentarioService;
+  private final ComentarioService comentarioService;
 
-    @PostMapping
-    @Override
-    public ResponseEntity<ComentarioResponseDto> adicionarComentario(
-            @PathVariable Long chamadoId,
-            @Valid @RequestBody ComentarioRequestDto request
-    ) {
-        ComentarioResponseDto response = comentarioService.adicionarComentario(chamadoId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @PostMapping
+  @Override
+  public ResponseEntity<ComentarioResponseDto> adicionarComentario(
+      @PathVariable Long chamadoId, @Valid @RequestBody ComentarioRequestDto request) {
+    ComentarioResponseDto response = comentarioService.adicionarComentario(chamadoId, request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
-    @GetMapping
-    @Override
-    public ResponseEntity<List<ComentarioResponseDto>> listarComentarios(@PathVariable Long chamadoId) {
-        return ResponseEntity.ok(comentarioService.listarComentarios(chamadoId));
-    }
-
+  @GetMapping
+  @Override
+  public ResponseEntity<List<ComentarioResponseDto>> listarComentarios(
+      @PathVariable Long chamadoId) {
+    return ResponseEntity.ok(comentarioService.listarComentarios(chamadoId));
+  }
 }

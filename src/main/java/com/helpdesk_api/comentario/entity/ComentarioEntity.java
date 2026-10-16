@@ -18,24 +18,24 @@ import org.hibernate.annotations.CreationTimestamp;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ComentarioEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @EqualsAndHashCode.Include
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "texto", nullable = false, columnDefinition = "TEXT")
-    private String texto;
+  @Column(name = "texto", nullable = false, columnDefinition = "TEXT")
+  private String texto;
 
-    @CreationTimestamp
-    @Column(name = "data_comentario", nullable = false, updatable = false)
-    private LocalDateTime dataComentario;
+  @CreationTimestamp
+  @Column(name = "data_comentario", nullable = false, updatable = false)
+  private LocalDateTime dataComentario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private UsuarioEntity usuario;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "usuario_id", nullable = false)
+  private UsuarioEntity usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chamado_id", nullable = false)
-    private ChamadoEntity chamado;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "chamado_id", nullable = false)
+  private ChamadoEntity chamado;
 }
